@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Colors -->
+    <color name="colorPrimary">#BB86FC</color> <!-- Light Purple -->
+    <color name="colorPrimaryVariant">#3700B3</color> <!-- Dark Purple -->
+    <color name="colorSecondary">#03DAC6</color> <!-- Teal -->
+    <color name="colorSecondaryVariant">#03DAC6</color> <!-- Teal -->
+
+    <!-- Backgrounds and Surfaces -->
+    <color name="colorSurface">#1E1E1E</color> <!-- Lighter Gray -->
+    <color name="colorBackground">#000000</color>
+
+    <!-- Text Colors -->
+    <color name="colorOnPrimary">#000000</color> <!-- Black -->
+    <color name="colorOnSecondary">#000000</color> <!-- Black -->
+    <color name="colorOnBackground">#FFFFFF</color> <!-- White -->
+    <color name="colorOnSurface">#FFFFFF</color> <!-- White -->
+
+    <!-- Error Colors -->
+    <color name="colorError">#CF6679</color> <!-- Light Red -->
+    <color name="colorOnError">#000000</color> <!-- Black -->
+</resources>

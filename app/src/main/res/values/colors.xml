@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Primary Colors -->
+    <color name="purplePrimary">#6200EE</color> <!-- Purple -->
+    <color name="purpleDark">#3700B3</color> <!-- Darker Purple -->
+    <color name="tealPrimary">#03DAC6</color> <!-- Teal -->
+    <color name="tealDark">#018786</color> <!-- Darker Teal -->
+
+    <!-- Backgrounds and Surfaces -->
+    <color name="lightGraySurface">#F2F2F2</color> <!-- Light Gray -->
+    <color name="whiteBackground">#FFFFFF</color> <!-- White -->
+    <color name="greenPrimary">#2CE915</color>
+    <!-- Text Colors -->
+    <color name="whiteOnPrimary">#FFFFFF</color> <!-- White -->
+    <color name="blackOnSecondary">#000000</color> <!-- Black -->
+    <color name="blackOnBackground">#000000</color> <!-- Black -->
+    <color name="blackOnSurface">#000000</color> <!-- Black -->
+
+    <!-- Error Colors -->
+    <color name="redError">#B00020</color> <!-- Red -->
+    <color name="whiteOnError">#FFFFFF</color> <!-- White -->
 </resources>
+

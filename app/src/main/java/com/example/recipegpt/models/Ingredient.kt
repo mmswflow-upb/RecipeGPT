@@ -1,4 +1,6 @@
 package com.example.recipegpt.models
 
-class Ingredient {
-}
+data class Ingredient(
+    val item: String,
+    val quantity: String
+)
