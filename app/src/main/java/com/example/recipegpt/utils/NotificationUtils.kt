@@ -8,19 +8,32 @@ import com.example.recipegpt.R
 
 object NotificationUtils {
 
-    private const val CHANNEL_ID = "CookingTips"
+    private const val CHANNEL_ID = "RecipeNotifications"
+    private const val CHANNEL_NAME = "Recipe Updates"
 
     fun showNotification(context: Context, title: String, message: String) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channel = NotificationChannel(CHANNEL_ID, "Cooking Tips", NotificationManager.IMPORTANCE_DEFAULT)
-        notificationManager.createNotificationChannel(channel)
 
+        // Create Notification Channel (for Android O+)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        // Build and show the notification
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true) // Dismiss notification when clicked
             .build()
 
         notificationManager.notify(1, notification)
     }
 }
+
