@@ -9,7 +9,7 @@ plugins {
 }
 
 val devKey = gradleLocalProperties(rootDir, providers).getProperty("devKey", "")
-val apiUrl = gradleLocalProperties(rootDir, providers).getProperty("localUrl", "")
+val apiUrl = gradleLocalProperties(rootDir, providers).getProperty("apiUrl", "")
 
 android {
     namespace = "com.example.recipegpt"

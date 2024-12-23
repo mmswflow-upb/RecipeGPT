@@ -2,6 +2,7 @@ package com.example.recipegpt.services
 
 import android.app.Service
 import android.content.Intent
+import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import com.example.recipegpt.data.AppDatabase
@@ -14,12 +15,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.net.SocketTimeoutException
 
 class RecipeService : Service() {
 
     private lateinit var recipeDao: RecipeDao
-    private var apiService: ApiInterface? = null // Use nullable to prevent crashes
+    private var apiService: ApiInterface? = null
+
+    // Binder instance to bind the service
+    private val binder = LocalBinder()
+
+    // Inner class for the client Binder
+    inner class LocalBinder : Binder() {
+        fun getService(): RecipeService = this@RecipeService
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -29,55 +37,32 @@ class RecipeService : Service() {
         Log.d("RecipeService", "Initialized apiService")
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val query = intent?.getStringExtra("query") ?: "default query"
-
+    /**
+     * Perform a search for recipes based on the given query.
+     * This method can be invoked from an activity or other components.
+     */
+    fun searchRecipes(query: String, callback: (List<Recipe>) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
-            apiService?.let {
+            val recipes = apiService?.let {
                 try {
-                    val recipes = searchRecipes(query)
-
-                    Log.d("RecipeService", "Fetched ${recipes.size} recipes")
-
+                    val response = it.searchRecipes(5, query).execute()
+                    if (response.isSuccessful) {
+                        response.body()?.recipes ?: emptyList()
+                    } else {
+                        Log.e("RecipeService", "Error: ${response.code()} - ${response.message()}")
+                        emptyList()
+                    }
                 } catch (e: Exception) {
                     Log.e("RecipeService", "Error fetching recipes: ${e.message}")
-                } finally {
-                    stopSelf() // Stop the service after work is completed
-                }
-            } ?: run {
-                Log.e("RecipeService", "API service not initialized")
-                stopSelf() // Stop the service if initialization failed
-            }
-        }
-        return START_NOT_STICKY
-    }
-
-    /**
-     * Search recipes from the API based on a query.
-     */
-    suspend fun searchRecipes(query: String): List<Recipe> = withContext(Dispatchers.IO) {
-        apiService?.let {
-            try {
-                val response = it.searchRecipes(1, query).execute()
-                Log.d("Raw JSON Response", response.body().toString())
-                if (response.isSuccessful) {
-                    val recipesResponse = response.body()
-                    Log.d("ResponseBody", (recipesResponse ?: "No response body").toString())
-
-                    Log.d("RecipeService", "Fetched ${recipesResponse?.recipes?.size} recipes")
-                    recipesResponse?.recipes ?: emptyList()
-                } else {
-                    Log.e("RecipeService", "Error: ${response.code()} - ${response.message()}")
                     emptyList()
                 }
-            } catch (e: Exception) {
-                Log.e("RecipeService", "Error fetching recipes: ${e.message}")
-                emptyList()
+            } ?: emptyList()
+
+            withContext(Dispatchers.Main) {
+                callback(recipes)
             }
-        } ?: emptyList()
+        }
     }
-
-
 
     /**
      * Save a single recipe to the Room database.
@@ -101,7 +86,7 @@ class RecipeService : Service() {
         return (System.currentTimeMillis() % Int.MAX_VALUE).toInt()
     }
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
+    override fun onBind(intent: Intent?): IBinder {
+        return binder
     }
 }

@@ -16,7 +16,7 @@ data class Recipe(
 
 data class Ingredient(
     @SerializedName("item") val item: String,
-    @SerializedName("amount") val amount: Double,
+    @SerializedName("amount") val amount: Number,
     @SerializedName("unit") val unit: String
 )
 
