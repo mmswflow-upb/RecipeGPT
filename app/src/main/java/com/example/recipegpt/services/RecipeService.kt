@@ -45,7 +45,7 @@ class RecipeService : Service() {
         CoroutineScope(Dispatchers.IO).launch {
             val recipes = apiService?.let {
                 try {
-                    val response = it.searchRecipes(5, query).execute()
+                    val response = it.searchRecipes(2, query).execute()
                     if (response.isSuccessful) {
                         response.body()?.recipes ?: emptyList()
                     } else {

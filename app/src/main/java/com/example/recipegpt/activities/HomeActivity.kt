@@ -95,8 +95,15 @@ class HomeActivity : AppCompatActivity() {
 
     private fun displaySearchResults(results: List<Recipe>) {
         if (results.isNotEmpty()) {
+
+            binding.noRecipesTextView.visibility = android.view.View.INVISIBLE
+
+          binding.recipeRecyclerView.visibility = android.view.View.VISIBLE
             recipeAdapter.submitList(results)
+
         } else {
+            binding.noRecipesTextView.visibility = android.view.View.VISIBLE
+            binding.recipeRecyclerView.visibility = android.view.View.INVISIBLE
             Toast.makeText(this, "No recipes found", Toast.LENGTH_SHORT).show()
         }
     }

@@ -36,18 +36,7 @@
             android:orientation="horizontal"
             android:paddingHorizontal="16dp">
 
-            <!-- Add Recipe Button -->
-            <ImageButton
-                android:id="@+id/addRecipeButton"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginEnd="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/add_recipe"
-                android:src="@android:drawable/ic_input_add"
-                android:layout_weight="1"
 
-                app:tint="?attr/colorSecondary" />
 
             <!-- Search Bar -->
             <com.google.android.material.textfield.TextInputLayout
@@ -63,11 +52,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/search_hint"
-                    android:inputType="text"
+                    android:inputType="textNoSuggestions"
                     android:textColor="?attr/colorOnBackground"
                     android:textColorHint="?attr/colorOnSurface"
                     android:backgroundTint="?attr/colorSurface"
+                    android:importantForAutofill="no"
                     android:backgroundTintMode="screen"
+                    android:imeOptions="actionSearch"
                     />
             </com.google.android.material.textfield.TextInputLayout>
 
