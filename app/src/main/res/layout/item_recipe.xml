@@ -6,6 +6,7 @@
     android:orientation="vertical"
     android:padding="8dp">
 
+    <!-- Recipe Title -->
     <TextView
         android:id="@+id/recipeTitle"
         android:layout_width="match_parent"
@@ -14,10 +15,27 @@
         android:textStyle="bold"
         android:paddingTop="4dp" />
 
+    <!-- Recipe Description -->
     <TextView
         android:id="@+id/recipeDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="14sp"
         android:paddingTop="2dp" />
+
+    <!-- Details Button -->
+    <Button
+        android:id="@+id/detailsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="8dp"
+        android:text="@string/recipe_details"
+        android:textSize="14sp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:backgroundTint="?attr/colorPrimary"
+        android:textColor="?attr/colorOnPrimary" />
 </LinearLayout>
+
+

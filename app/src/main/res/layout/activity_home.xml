@@ -63,15 +63,18 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Search Button -->
-            <ImageButton
-                android:id="@+id/searchButton"
+            <ProgressBar
+                android:id="@+id/searchProgressBar"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/search_icon"
-                android:src="@android:drawable/ic_menu_search"
                 android:layout_weight="1"
-                app:tint="?attr/colorOnSecondary" />
+                android:indeterminate="true"
+                android:visibility="invisible"
+                android:indeterminateTint="?attr/colorPrimary"
+                style="?android:attr/progressBarStyleSmall"
+                android:background="?attr/selectableItemBackgroundBorderless"
+            />
+
         </LinearLayout>
 
         <!-- RecyclerView for Recipe List -->

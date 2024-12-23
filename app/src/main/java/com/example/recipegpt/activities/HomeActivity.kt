@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import android.view.inputmethod.EditorInfo
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +22,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var recipeAdapter: RecipeAdapter
     private var recipeService: RecipeService? = null
     private var isBound = false
+    private var searching = false
 
     // Service connection object to manage the connection to the service
     private val serviceConnection = object : ServiceConnection {
@@ -36,6 +36,8 @@ class HomeActivity : AppCompatActivity() {
         override fun onServiceDisconnected(name: ComponentName) {
             recipeService = null
             isBound = false
+            binding.searchProgressBar.visibility = android.view.View.INVISIBLE
+            searching = false
             Log.d("HomeActivity", "Service disconnected")
         }
     }
@@ -59,14 +61,25 @@ class HomeActivity : AppCompatActivity() {
 
         // Set up search functionality with a single request
         binding.searchEditText.setOnEditorActionListener { v, actionId, _ ->
+
             if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
                 val query = v.text.toString().trim()
-                if (query.isNotEmpty()) {
-                    Log.d("Recipe Search Bar", "Query: $query")
-                    searchRecipes(query)
-                } else {
-                    Toast.makeText(this, "Enter a search query", Toast.LENGTH_SHORT).show()
+
+                if(!searching){
+
+                    if (query.isNotEmpty()) {
+                        Log.d("Recipe Search Bar", "Query: $query")
+                        searching = true
+                        binding.searchProgressBar.visibility = android.view.View.VISIBLE
+                        searchRecipes(query)
+                    } else {
+                        searching = false
+                        binding.searchProgressBar.visibility = android.view.View.INVISIBLE
+
+                        Toast.makeText(this, "Enter a search query", Toast.LENGTH_SHORT).show()
+                    }
                 }
+
                 true
             } else {
                 false
@@ -79,6 +92,8 @@ class HomeActivity : AppCompatActivity() {
         // Unbind the service when the activity is destroyed
         if (isBound) {
             unbindService(serviceConnection)
+            binding.searchProgressBar.visibility = android.view.View.INVISIBLE
+            searching = false
             isBound = false
         }
     }
@@ -90,15 +105,21 @@ class HomeActivity : AppCompatActivity() {
             }
         } else {
             Log.e("HomeActivity", "Service not bound or null")
+            searching = false
+            binding.searchProgressBar.visibility = android.view.View.INVISIBLE
+
         }
     }
 
     private fun displaySearchResults(results: List<Recipe>) {
+        searching = false
+        binding.searchProgressBar.visibility = android.view.View.INVISIBLE
+
         if (results.isNotEmpty()) {
 
             binding.noRecipesTextView.visibility = android.view.View.INVISIBLE
 
-          binding.recipeRecyclerView.visibility = android.view.View.VISIBLE
+            binding.recipeRecyclerView.visibility = android.view.View.VISIBLE
             recipeAdapter.submitList(results)
 
         } else {
