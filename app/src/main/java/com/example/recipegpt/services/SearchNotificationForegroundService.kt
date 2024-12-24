@@ -27,7 +27,9 @@ class SearchNotificationForegroundService : Service() {
                 startTime = System.currentTimeMillis()
                 isRunning = true
 
-                 NotificationUtils.showStandardNotification(this, "Recipes Search", "Starting the Search", 1)
+
+                NotificationUtils.showStandardNotification(this, "Recipes Search", "Starting the Search", 1)
+
                 // Start the persistent notification
                 val notification = NotificationUtils.createPersistentNotification(
                     this,

@@ -12,20 +12,8 @@ import com.example.recipegpt.activities.HomeActivity
 
 object NotificationUtils {
 
-    private const val CHANNEL_ID = "RecipeNotifications"
-    private const val CHANNEL_NAME = "Recipe Updates"
+    private const val CHANNEL_ID = "RecipeGPTPersistentNotifications"
 
-    fun createNotificationChannel(context: Context) {
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        // Create Notification Channel (for Android O+)
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            CHANNEL_NAME,
-            NotificationManager.IMPORTANCE_LOW // Low priority suppresses sounds
-        )
-        notificationManager.createNotificationChannel(channel)
-    }
 
     fun createPersistentNotification(
         context: Context,

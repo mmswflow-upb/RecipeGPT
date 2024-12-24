@@ -10,6 +10,7 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.recipegpt.R
+import com.example.recipegpt.utils.NotificationUtils
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class HomeActivity : AppCompatActivity() {
@@ -38,6 +39,5 @@ class HomeActivity : AppCompatActivity() {
         val navController: NavController = findNavController(R.id.nav_host_fragment)
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         bottomNavigationView.setupWithNavController(navController)
-        
     }
 }
