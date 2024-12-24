@@ -13,10 +13,14 @@ constraintlayout = "2.2.0"
 retrofit = "2.9.0"
 roomCommon = "2.6.1"
 roomKtx = "2.6.1"
+workRuntimeKtx = "2.10.0"
+workRuntimeKtxVersion = "2.8.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-room-compiler = { module = "androidx.room:room-compiler" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
+androidx-work-runtime-ktx-v280 = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtxVersion" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

@@ -1,20 +1,32 @@
 package com.example.recipegpt.activities
 
+import android.Manifest
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.recipegpt.adapters.RecipeAdapter
 import com.example.recipegpt.databinding.ActivityHomeBinding
 import com.example.recipegpt.models.Recipe
 import com.example.recipegpt.services.RecipeService
+import com.example.recipegpt.workers.RandomQuoteWorker
+import java.util.concurrent.TimeUnit
 
 class HomeActivity : AppCompatActivity() {
 
@@ -23,7 +35,7 @@ class HomeActivity : AppCompatActivity() {
     private var recipeService: RecipeService? = null
     private var isBound = false
     private var searching = false
-
+    private  val UNIQUE_WORK_NAME = "RandomQuoteWorker"
     // Service connection object to manage the connection to the service
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
@@ -42,8 +54,31 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (!isGranted) {
+                Toast.makeText(this, "Notification permission is required for fetching random quotes", Toast.LENGTH_SHORT).show()
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+
+        // Schedule Random Quote Fetching Worker when launching app
+        scheduleQuoteWorker(this)
+
+
+
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -86,6 +121,26 @@ class HomeActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun scheduleQuoteWorker(context: Context) {
+        // Define constraints for the worker
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED) // Only run when network is connected
+            .build()
+
+        // Create a periodic work request
+        val periodicWorkRequest = PeriodicWorkRequestBuilder<RandomQuoteWorker>(600, TimeUnit.SECONDS)
+            .setConstraints(constraints)
+            .build()
+
+        // Enqueue the work request
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            "RandomQuoteWorker", // Unique name to prevent duplicate workers
+            androidx.work.ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+            periodicWorkRequest
+        )
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()

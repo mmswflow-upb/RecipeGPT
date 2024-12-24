@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorOnPrimary">
+    android:background="?attr/background">
 
     <!-- Main Content -->
     <RelativeLayout
@@ -55,9 +55,9 @@
                     android:inputType="textNoSuggestions"
                     android:textColor="?attr/colorOnBackground"
                     android:textColorHint="?attr/colorOnSurface"
-                    android:backgroundTint="?attr/colorSurface"
+                    android:backgroundTint="?attr/background"
                     android:importantForAutofill="no"
-                    android:backgroundTintMode="screen"
+                    android:backgroundTintMode="src_in"
                     android:imeOptions="actionSearch"
                     />
             </com.google.android.material.textfield.TextInputLayout>
@@ -111,6 +111,11 @@
         android:layout_alignParentBottom="true"
         app:itemIconTint="?attr/colorPrimary"
         app:itemTextColor="?attr/colorPrimary"
+        android:clipToOutline="true"
+        android:outlineProvider="bounds"
+        android:backgroundTint="?attr/background"
+        android:backgroundTintMode="screen"
         app:menu="@menu/bottom_navigation_menu" />
+    
 
 </RelativeLayout>

@@ -1,8 +1,7 @@
 package com.example.recipegpt.network
 
 import com.example.recipegpt.BuildConfig
-import com.example.recipegpt.R
-import com.example.recipegpt.models.Recipe
+import com.example.recipegpt.models.QuoteResponse
 import com.example.recipegpt.models.RecipesResponse
 import retrofit2.Call
 import retrofit2.http.GET
@@ -16,4 +15,8 @@ interface ApiInterface {
         @Query("numberOfRecipes") numberOfRecipes : Int,
         @Query("recipeQuery") recipeQuery: String
     ): Call<RecipesResponse>
+
+    @Headers("devkey: ${BuildConfig.API_KEY}")
+    @GET("/randomQuote")
+    fun randomQuote() : Call<QuoteResponse>
 }

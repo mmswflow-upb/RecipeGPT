@@ -1,22 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary Colors -->
-    <color name="colorPrimary">#BB86FC</color> <!-- Light Purple -->
-    <color name="colorPrimaryVariant">#3700B3</color> <!-- Dark Purple -->
-    <color name="colorSecondary">#03DAC6</color> <!-- Teal -->
-    <color name="colorSecondaryVariant">#03DAC6</color> <!-- Teal -->
+    <color name="purplePrimary">#6200EE</color> <!-- Purple -->
+    <color name="purpleDark">#3700B3</color> <!-- Darker Purple -->
+    <color name="tealPrimary">#03DAC6</color> <!-- Teal -->
+    <color name="tealDark">#018786</color> <!-- Darker Teal -->
 
-    <!-- Backgrounds and Surfaces -->
-    <color name="colorSurface">#1E1E1E</color> <!-- Lighter Gray -->
-    <color name="colorBackground">#000000</color>
-
-    <!-- Text Colors -->
-    <color name="colorOnPrimary">#000000</color> <!-- Black -->
-    <color name="colorOnSecondary">#000000</color> <!-- Black -->
-    <color name="colorOnBackground">#FFFFFF</color> <!-- White -->
-    <color name="colorOnSurface">#FFFFFF</color> <!-- White -->
-
-    <!-- Error Colors -->
-    <color name="colorError">#CF6679</color> <!-- Light Red -->
-    <color name="colorOnError">#000000</color> <!-- Black -->
+    <color name="lightGray">#F2F2F2</color> <!-- Light Gray -->
+    <color name="white">#FFFFFF</color> <!-- White -->
+    <color name="greenPrimary">#2CE915</color> <!-- Lime Green -->
+    <color name="black">#000000</color> <!-- Black -->
+    <color name="grayDark">#2C2C2C</color>
+    <color name="redDark">#B00020</color> <!-- Red -->
 </resources>
+
