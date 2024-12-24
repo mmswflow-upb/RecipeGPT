@@ -1,131 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/background">
+    android:orientation="vertical">
 
-    <!-- Main Content -->
-    <RelativeLayout
+    <!-- Fragment Container for Hosting Fragments -->
+    <fragment
+        android:id="@+id/nav_host_fragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="70dp"
-        android:gravity="center_horizontal"
-        >
-
-        <!-- Title at the Top -->
-        <TextView
-            android:id="@+id/titleTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="@string/app_title"
-            android:textColor="?attr/colorPrimary"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <!-- Row Containing Search Bar and Plus Button -->
-        <LinearLayout
-            android:id="@+id/searchRow"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/titleTextView"
-            android:layout_marginTop="16dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:background="@drawable/rounded_rectangle_border"
-            android:paddingVertical="6dp">
-
-
-
-            <!-- Search Bar -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="10"
-
-                app:boxBackgroundMode="filled"
-                app:boxBackgroundColor="?attr/colorSurface"
-                app:boxStrokeColor="@android:color/transparent">
-
-                <EditText
-                    android:id="@+id/searchEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/search_hint"
-                    android:inputType="text"
-                    android:textSize="18sp"
-
-                    android:textColor="?attr/colorOnBackground"
-                    android:textColorHint="?attr/colorOnSurface"
-                    android:backgroundTint="@android:color/transparent"
-                    android:importantForAutofill="no"
-                    android:backgroundTintMode="src_in"
-                    android:imeOptions="actionSearch"
-                    />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Search Button -->
-            <ProgressBar
-                android:id="@+id/searchProgressBar"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:indeterminate="true"
-                android:visibility="invisible"
-                android:indeterminateTint="?attr/colorAccent"
-                style="?android:attr/progressBarStyleSmall"
-                android:background="?attr/selectableItemBackgroundBorderless"
-            />
-
-        </LinearLayout>
-
-        <!-- RecyclerView for Recipe List -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recipeRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_above="@id/noRecipesTextView"
-            android:layout_below="@id/searchRow"
-            android:backgroundTint="?attr/colorSurface"
-            android:backgroundTintMode="screen"
-            android:clipToPadding="false"
-            android:padding="16dp"
-            android:scrollbars="vertical" />
-
-        <!-- Empty State Text -->
-        <TextView
-            android:id="@+id/noRecipesTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:text="@string/no_recipes"
-            android:textColor="?attr/colorOnBackground"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:visibility="visible" />
-    </RelativeLayout>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:navGraph="@navigation/nav_graph"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        app:defaultNavHost="true"/>
 
     <View
         android:id="@+id/horizontal_line_bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_above="@id/bottom_navigation"
         android:background="@drawable/horizontal_line" />
-    <!-- Navigation Drawer Menu -->
+    <!-- BottomNavigationView for Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:background="?attr/background"
         android:elevation="0dp"
         app:itemIconTint="?attr/colorOnSecondary"
         app:itemTextColor="?attr/colorPrimary"
         app:menu="@menu/bottom_navigation_menu"
         />
+</LinearLayout>
 
 
-</RelativeLayout>
+

@@ -25,6 +25,6 @@
         <item name="android:navigationBarColor">@color/black</item>
 
         <!-- Progress Bars -->
-        <item name="colorAccent">@color/purplePrimary</item>
+        <item name="colorAccent">@color/blueLight</item>
     </style>
 </resources>

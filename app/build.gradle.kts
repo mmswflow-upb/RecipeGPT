@@ -53,6 +53,8 @@ android {
 dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
     val room_version = "2.6.1"
 
     ksp("androidx.room:room-compiler:$room_version")

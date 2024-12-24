@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/menu_home">
+
+    <fragment
+        android:id="@+id/menu_home"
+        android:name="com.example.recipegpt.fragments.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/menu_saved_recipes"
+        android:name="com.example.recipegpt.fragments.savedrecipes.SavedRecipesFragment"
+        android:label="@string/menu_saved_recipes"
+        tools:layout="@layout/fragment_saved_recipes" />
+
+    <fragment
+        android:id="@+id/menu_shopping_list"
+        android:name="com.example.recipegpt.fragments.shoppinglist.ShoppingListFragment"
+        android:label="@string/menu_shopping_list"
+        tools:layout="@layout/fragment_shopping_list" />
+
+    <fragment
+        android:id="@+id/menu_settings"
+        android:name="com.example.recipegpt.fragments.settings.SettingsFragment"
+        android:label="@string/menu_settings"
+        tools:layout="@layout/fragment_settings" />
+</navigation>

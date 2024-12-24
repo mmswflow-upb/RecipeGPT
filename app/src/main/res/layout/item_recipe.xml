@@ -4,37 +4,43 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:gravity="center_horizontal"
-    android:orientation="vertical">
+    android:padding="10dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp">
+        android:layout_height="wrap_content">
 
-        <!-- Recipe Title -->
+        <!-- Recipe Title and Description -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/detailsButton"
             android:orientation="vertical">
 
+            <!-- Recipe Title -->
             <TextView
                 android:id="@+id/recipeTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="aaa"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:justificationMode="inter_character"
                 android:textColor="?attr/colorOnBackground"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
+            <!-- Recipe Description -->
             <TextView
                 android:id="@+id/recipeDescription"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:justificationMode="inter_character"
+                android:ellipsize="end"
+                android:maxLines="2"
                 android:textColor="?attr/colorOnBackground"
-
-                android:text="aaa"
                 android:textSize="18sp" />
         </LinearLayout>
 
@@ -55,8 +61,8 @@
 
     <View
         android:id="@+id/horizontal_line_bottom_navigation"
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="5dp"
         android:layout_height="2dp"
         android:background="@drawable/horizontal_line" />
 </LinearLayout>
-
