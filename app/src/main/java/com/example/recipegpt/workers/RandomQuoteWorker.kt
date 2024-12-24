@@ -11,6 +11,7 @@ import retrofit2.HttpException
 
 class RandomQuoteWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
 
+    private val randomQuoteNotificationId = 3
     override fun doWork(): Result {
         // Fetch the quote
         try {
@@ -21,29 +22,39 @@ class RandomQuoteWorker(context: Context, workerParams: WorkerParameters) : Work
                 val quote = response.body()!!.quote
                 Log.d("RandomQuoteWorker", "Fetched random quote: $quote")
                 // Show the quote as a notification
-                NotificationUtils.showNotification(
+                NotificationUtils.showStandardNotification(
                     applicationContext,
                     "Cooking Quote",
-                    quote
+                    quote,
+                    randomQuoteNotificationId
+
+
                 )
             } else {
-                NotificationUtils.showNotification(
+                NotificationUtils.showStandardNotification(
                     applicationContext,
                     "Error",
-                    "Failed to fetch a random quote. Please try again later."
+                    "Failed to fetch a random quote. Please try again later.",
+                    randomQuoteNotificationId
                 )
             }
         } catch (e: HttpException) {
-            NotificationUtils.showNotification(
+            NotificationUtils.showStandardNotification(
                 applicationContext,
                 "Error",
-                "Network error: ${e.message}"
+                "Network error: ${e.message}",
+                randomQuoteNotificationId
+
+
             )
         } catch (e: Exception) {
-            NotificationUtils.showNotification(
+            NotificationUtils.showStandardNotification(
                 applicationContext,
                 "Error",
-                "Unexpected error: ${e.message}"
+                "Unexpected error: ${e.message}",
+                randomQuoteNotificationId
+
+
             )
         }
 

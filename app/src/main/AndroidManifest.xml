@@ -34,7 +34,10 @@
             android:exported="false"
              />
 
-
+        <service
+            android:name=".services.SearchNotificationForegroundService"
+            android:foregroundServiceType="dataSync"
+            android:exported="false" />
 
 
     </application>

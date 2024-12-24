@@ -1,11 +1,13 @@
-package com.example.recipegpt.viewmodels
+package com.example.recipegpt.fragments.home
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,31 +17,30 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.recipegpt.models.Recipe
 import com.example.recipegpt.services.RecipeService
+import com.example.recipegpt.services.SearchNotificationForegroundService
 import com.example.recipegpt.workers.RandomQuoteWorker
 import java.util.concurrent.TimeUnit
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     // Recipe Service and Binding State
+    @SuppressLint("StaticFieldLeak")
     private var _recipeService: RecipeService? = null
-    private val _isBound = MutableLiveData<Boolean>(false)
-    val isBound: LiveData<Boolean> get() = _isBound
+    private val _isBound = MutableLiveData(false)
 
     // LiveData for query text
     private val _query = MutableLiveData<String>()
     val query: LiveData<String> get() = _query
 
     // LiveData for searching status
-    private val _isSearching = MutableLiveData<Boolean>(false)
+    private val _isSearching = MutableLiveData(false)
     val isSearching: LiveData<Boolean> get() = _isSearching
 
     // LiveData for API results
     private val _recipes = MutableLiveData<List<Recipe>>()
     val recipes: LiveData<List<Recipe>> get() = _recipes
 
-    // LiveData for current page (optional for pagination)
-    private val _currentPage = MutableLiveData<Int>(1)
-    val currentPage: LiveData<Int> get() = _currentPage
+
 
     // Service connection for RecipeService
     private val serviceConnection = object : ServiceConnection {
@@ -80,13 +81,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _isSearching.value = status
     }
 
-    fun updateRecipes(newRecipes: List<Recipe>) {
+    private fun updateRecipes(newRecipes: List<Recipe>) {
         _recipes.value = newRecipes
     }
 
-    fun updateCurrentPage(page: Int) {
-        _currentPage.value = page
-    }
+
 
     private fun scheduleQuoteWorker() {
         val constraints = Constraints.Builder()
@@ -105,9 +104,45 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         )
     }
 
-    fun searchRecipes(query: String, onResult: (List<Recipe>) -> Unit) {
+    private fun startSearchNotificationService(context: Context, query: String) {
+        Log.d("HomeViewModel-startSearchNotificationService", "Passed Query: $query")
+        val intent = Intent(context, SearchNotificationForegroundService::class.java).apply {
+            action = "START"
+            putExtra("query", query)
+        }
+        context.startForegroundService(intent)
+    }
+
+    private fun stopSearchNotificationService(context: Context) {
+        val intent = Intent(context, SearchNotificationForegroundService::class.java).apply {
+            action = "STOP"
+        }
+        context.startService(intent)
+    }
+
+
+
+    fun searchRecipes(query: String) {
+
+        val context = getApplication<Application>().applicationContext
+
         if (_isBound.value == true && _recipeService != null) {
-            _recipeService?.searchRecipes(query, onResult)
+            updateSearchingStatus(true)
+
+            // Start the foreground service
+
+            startSearchNotificationService(context, query)
+
+            _recipeService?.searchRecipes(query) { recipes ->
+                updateRecipes(recipes)
+                updateSearchingStatus(false)
+
+                // Stop the foreground service
+                stopSearchNotificationService(context)
+            }
         }
     }
+
+
+
 }

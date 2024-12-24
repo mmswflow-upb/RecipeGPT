@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.recipegpt.R
 import com.example.recipegpt.adapters.RecipeAdapter
 import com.example.recipegpt.databinding.FragmentHomeBinding
-import com.example.recipegpt.viewmodels.HomeViewModel
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
@@ -45,8 +44,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
                 val query = v.text.toString().trim()
                 if (query.isNotEmpty()) {
-                    viewModel.updateQuery(query)
-                    performSearch(query)
+                    if(!viewModel.isSearching.value!!){
+                        viewModel.updateQuery(query)
+                        performSearch(query)
+                    }
                 } else {
                     Toast.makeText(requireContext(), "Enter a search query", Toast.LENGTH_SHORT).show()
                 }
@@ -73,12 +74,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun performSearch(query: String) {
+
+
+
         viewModel.updateSearchingStatus(true)
+
         lifecycleScope.launch {
-            viewModel.searchRecipes(query) { results ->
-                viewModel.updateRecipes(results)
-                viewModel.updateSearchingStatus(false)
-            }
+
+            viewModel.searchRecipes(query)
         }
     }
 
