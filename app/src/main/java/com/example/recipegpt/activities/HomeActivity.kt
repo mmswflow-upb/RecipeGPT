@@ -129,7 +129,7 @@ class HomeActivity : AppCompatActivity() {
             .build()
 
         // Create a periodic work request
-        val periodicWorkRequest = PeriodicWorkRequestBuilder<RandomQuoteWorker>(600, TimeUnit.SECONDS)
+        val periodicWorkRequest = PeriodicWorkRequestBuilder<RandomQuoteWorker>(10, TimeUnit.SECONDS)
             .setConstraints(constraints)
             .build()
 

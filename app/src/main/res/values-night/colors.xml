@@ -11,5 +11,7 @@
     <color name="black">#000000</color> <!-- Black -->
     <color name="grayDark">#2C2C2C</color>
     <color name="redDark">#B00020</color> <!-- Red -->
+    <color name="blueLight">#50B3EB</color>
+
 </resources>
 

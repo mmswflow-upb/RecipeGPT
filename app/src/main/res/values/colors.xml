@@ -10,6 +10,8 @@
     <color name="greenPrimary">#2CE915</color> <!-- Lime Green -->
     <color name="black">#000000</color> <!-- Black -->
     <color name="grayDark">#2C2C2C</color>
+    <color name="blueLight">#50B3EB</color>
+
 
     <color name="redDark">#B00020</color> <!-- Red -->
 </resources>

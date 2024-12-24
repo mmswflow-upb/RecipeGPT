@@ -15,6 +15,8 @@
         <item name="colorOnSecondary">@color/black</item>
         <item name="colorOnBackground">@color/black</item>
         <item name="colorOnSurface">@color/black</item>
+        <item name="colorTertiary">@color/grayDark</item>
+        <item name="colorSecondaryContainer">@color/purplePrimary</item>
 
         <!-- Error -->
         <item name="colorError">@color/redDark</item>
@@ -23,5 +25,8 @@
         <!-- StatusBar and NavigationBar -->
         <item name="android:statusBarColor">@color/purpleDark</item>
         <item name="android:navigationBarColor">@color/white</item>
+
+        <!-- Progress Bars -->
+        <item name="colorAccent">@color/purplePrimary</item>
     </style>
 </resources>
