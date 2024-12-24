@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".services.RecipeService"
+            android:name=".services.GenerateRecipeService"
             android:exported="false"
              />
 

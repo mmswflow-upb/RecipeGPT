@@ -75,14 +75,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun performSearch(query: String) {
 
+        if(viewModel.isSearching.value == false){
+            viewModel.updateSearchingStatus(true)
+            lifecycleScope.launch {
 
-
-        viewModel.updateSearchingStatus(true)
-
-        lifecycleScope.launch {
-
-            viewModel.searchRecipes(query)
+                viewModel.searchRecipes(query)
+            }
         }
+
     }
 
     override fun onDestroyView() {

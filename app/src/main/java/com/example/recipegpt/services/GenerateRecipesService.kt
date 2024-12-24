@@ -4,7 +4,6 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import android.util.Log
 import com.example.recipegpt.data.AppDatabase
 import com.example.recipegpt.data.dao.RecipeDao
 import com.example.recipegpt.data.entities.RecipeEntity
@@ -16,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class RecipeService : Service() {
+class GenerateRecipeService : Service() {
 
     private lateinit var recipeDao: RecipeDao
     private var apiService: ApiInterface? = null
@@ -26,7 +25,7 @@ class RecipeService : Service() {
 
     // Inner class for the client Binder
     inner class LocalBinder : Binder() {
-        fun getService(): RecipeService = this@RecipeService
+        fun getService(): GenerateRecipeService = this@GenerateRecipeService
     }
 
     override fun onCreate() {
@@ -34,26 +33,24 @@ class RecipeService : Service() {
         // Initialize DAO and API Service
         recipeDao = AppDatabase.getInstance(applicationContext).recipeDao()
         apiService = ApiClient.instance.create(ApiInterface::class.java)
-        Log.d("RecipeService", "Initialized apiService")
     }
 
     /**
      * Perform a search for recipes based on the given query.
      * This method can be invoked from an activity or other components.
      */
-    fun searchRecipes(query: String, callback: (List<Recipe>) -> Unit) {
+    fun searchRecipes(query: String, numberOfRecipes: Int, callback: (List<Recipe>) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val recipes = apiService?.let {
+
                 try {
-                    val response = it.searchRecipes(2, query).execute()
+                    val response = it.searchRecipes(numberOfRecipes, query).execute()
                     if (response.isSuccessful) {
                         response.body()?.recipes ?: emptyList()
                     } else {
-                        Log.e("RecipeService", "Error: ${response.code()} - ${response.message()}")
                         emptyList()
                     }
                 } catch (e: Exception) {
-                    Log.e("RecipeService", "Error fetching recipes: ${e.message}")
                     emptyList()
                 }
             } ?: emptyList()

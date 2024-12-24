@@ -26,7 +26,6 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:justificationMode="inter_word"
                 android:textColor="?attr/colorOnBackground"
                 android:textSize="24sp"
                 android:textStyle="bold" />
@@ -36,7 +35,6 @@
                 android:id="@+id/recipeDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:justificationMode="inter_word"
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:textColor="?attr/colorOnBackground"

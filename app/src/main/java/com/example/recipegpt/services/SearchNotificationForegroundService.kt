@@ -16,10 +16,7 @@ class SearchNotificationForegroundService : Service() {
     private val searchNotificationId = 1
     private val searchCompleteNotificationId = 2
 
-    override fun onCreate() {
-        super.onCreate()
-        NotificationUtils.createNotificationChannel(this)
-    }
+
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
@@ -30,6 +27,7 @@ class SearchNotificationForegroundService : Service() {
                 startTime = System.currentTimeMillis()
                 isRunning = true
 
+                 NotificationUtils.showStandardNotification(this, "Recipes Search", "Starting the Search", 1)
                 // Start the persistent notification
                 val notification = NotificationUtils.createPersistentNotification(
                     this,
