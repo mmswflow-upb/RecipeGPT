@@ -1,7 +1,6 @@
-package com.example.recipegpt.activities
+package com.example.recipegpt.activities.home
 
 import android.Manifest
-import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -10,7 +9,6 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.recipegpt.R
-import com.example.recipegpt.utils.NotificationUtils
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class HomeActivity : AppCompatActivity() {
@@ -31,9 +29,7 @@ class HomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_home)
 
         // Request Notification Permission (API 33+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
+        requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
 
         // Set up BottomNavigationView with NavController
         val navController: NavController = findNavController(R.id.nav_host_fragment)

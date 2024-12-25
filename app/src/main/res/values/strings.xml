@@ -22,5 +22,16 @@
     <string name="random_quote_fetching_frequency">Random Quote Fetching Frequency</string>
     <string name="random_quote_frequency_description">Set how often random quotes should be fetched.</string>
     <string name="max_results_description">Set the maximum number of recipes to display in search results. The more results the slower the search.</string>
+    <string name="recipe_title_placeholder">Recipe Title</string>
+    <string name="cooking_time_placeholder">Cooking Time: %1$d mins</string>
+    <string name="servings_placeholder">Servings: %1$d</string>
+    <string name="ingredients_header">Ingredients</string>
+    <string name="instructions_header">Instructions</string>
+    <string name="save_button">Save</string>
+    <string name="cook_button">Cook</string>
+    <string name="recipe_details_page_title">Recipe Details</string>
+    <string name="instruction_step_placeholder">Step %1$d: %2$s</string>
+    <string name="ingredient_amount_placeholder">%1$s %2$s</string>
+    <string name="recipe_description_placeholder">Servings: %1$d, Time: %2$d min</string>
 
 </resources>

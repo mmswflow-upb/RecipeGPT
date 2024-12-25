@@ -1,14 +1,16 @@
 package com.example.recipegpt.adapters
 
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.recipegpt.R
+import com.example.recipegpt.activities.recipedetails.RecipeDetailsActivity
+import com.example.recipegpt.databinding.ItemRecipeBinding
 import com.example.recipegpt.models.Recipe
 
-class RecipeAdapter : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
+class RecipeAdapter(private val context: Context) : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
 
     private val recipes = mutableListOf<Recipe>()
 
@@ -19,8 +21,8 @@ class RecipeAdapter : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_recipe, parent, false)
-        return RecipeViewHolder(view)
+        val binding = ItemRecipeBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return RecipeViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
@@ -29,13 +31,24 @@ class RecipeAdapter : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
 
     override fun getItemCount(): Int = recipes.size
 
-    class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val title: TextView = itemView.findViewById(R.id.recipeTitle)
-        private val description: TextView = itemView.findViewById(R.id.recipeDescription)
+    inner class RecipeViewHolder(private val binding: ItemRecipeBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(recipe: Recipe) {
-            title.text = recipe.title
-            description.text = "Servings: ${recipe.servings}, Time: ${recipe.estimatedCookingTime} min"
+            // Set title and description
+            binding.recipeTitle.text = recipe.title
+            binding.recipeDescription.text = context.getString(
+                R.string.recipe_description_placeholder,
+                recipe.servings,
+                recipe.estimatedCookingTime
+            )
+
+            // Set click listener for the Details button
+            binding.detailsButton.setOnClickListener {
+                val intent = Intent(context, RecipeDetailsActivity::class.java).apply {
+                    putExtra("recipe", recipe) // Pass the recipe object
+                }
+                context.startActivity(intent)
+            }
         }
     }
 }

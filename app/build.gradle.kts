@@ -4,12 +4,12 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.devtools.ksp") version "1.9.24-1.0.20"
-
+    id ("kotlin-parcelize")
 
 }
 
-val devKey = gradleLocalProperties(rootDir, providers).getProperty("devKey", "")
-val apiUrl = gradleLocalProperties(rootDir, providers).getProperty("apiUrl", "")
+val devKey: String = gradleLocalProperties(rootDir, providers).getProperty("devKey", "")
+val apiUrl: String = gradleLocalProperties(rootDir, providers).getProperty("apiUrl", "")
 
 android {
     namespace = "com.example.recipegpt"
@@ -24,7 +24,7 @@ android {
         buildConfigField ("String", "BASE_URL", "\"${apiUrl}\"")
 
         applicationId = "com.example.recipegpt"
-        minSdk = 31
+        minSdk = 33
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"

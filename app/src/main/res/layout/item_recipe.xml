@@ -5,12 +5,13 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="center_horizontal"
-    android:padding="10dp">
+    android:layout_marginBottom="24dp"
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
+        android:layout_height="wrap_content"
+        >
         <!-- Recipe Title and Description -->
         <LinearLayout
             android:layout_width="0dp"
@@ -57,9 +58,10 @@
     </RelativeLayout>
 
     <View
-        android:id="@+id/horizontal_line_bottom_navigation"
         android:layout_width="match_parent"
+        android:layout_marginTop="6dp"
+
         android:layout_marginHorizontal="5dp"
-        android:layout_height="2dp"
+        android:layout_height="wrap_content"
         android:background="@drawable/horizontal_line" />
 </LinearLayout>

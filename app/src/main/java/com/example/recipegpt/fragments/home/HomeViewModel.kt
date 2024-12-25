@@ -83,6 +83,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     init {
+        Log.d("HomeViewModel-initialization", "Initializing home view model")
         // Schedule the worker with the initial settings
         scheduleQuoteWorker(_randomQuoteFrequency.value ?: "15 minutes")
 

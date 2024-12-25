@@ -27,7 +27,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         _binding = FragmentHomeBinding.bind(view)
 
         // Initialize RecyclerView
-        recipeAdapter = RecipeAdapter()
+        recipeAdapter = RecipeAdapter(requireContext())
         binding.recipeRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = recipeAdapter
