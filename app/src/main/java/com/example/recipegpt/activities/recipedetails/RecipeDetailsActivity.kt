@@ -97,11 +97,11 @@ class RecipeDetailsActivity : AppCompatActivity() {
     }
 
     private fun buildRecipeDetailsText(recipe: Recipe): String {
-        val ingredients = recipe.ingredients.joinToString("\n") {
+        val ingredients = recipe.ingredients.joinToString("\n\n") {
             "- ${it.amount} ${it.unit} of ${it.item}"
         }
 
-        val instructions = recipe.instructions.joinToString("\n") { step ->
+        val instructions = recipe.instructions.joinToString("\n\n") { step ->
             "Step ${recipe.instructions.indexOf(step) + 1}: $step"
         }
 

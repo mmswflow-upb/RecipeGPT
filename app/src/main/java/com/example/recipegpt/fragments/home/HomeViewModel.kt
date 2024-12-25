@@ -124,7 +124,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             "Once per day" -> 1440L
             else -> 0L // Never
         }
-
+        Log.d("HomeViewModel", "Scheduling random quotes worker")
         if (intervalMinutes > 0) {
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
