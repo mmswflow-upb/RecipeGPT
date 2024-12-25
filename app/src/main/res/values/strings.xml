@@ -46,5 +46,6 @@
     <string name="search_in_progress_message">Searching recipes for &quot;%1$s&quot;…</string>
     <string name="search_elapsed_time_message">Searching recipes for &quot;%1$s&quot;… (%2$d seconds elapsed)</string>
     <string name="search_complete_message">It took %1$d seconds to find recipes for &quot;%2$s&quot;</string>
+    <string name="menu_saved_ingredients">Ingredients</string>
 
 </resources>

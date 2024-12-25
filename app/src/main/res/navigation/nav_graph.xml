@@ -23,6 +23,12 @@
         tools:layout="@layout/fragment_shopping_list" />
 
     <fragment
+        android:id="@+id/menu_saved_ingredients"
+        android:name="com.example.recipegpt.fragments.savedingredients.SavedIngredientsFragment"
+        android:label="@string/menu_shopping_list"
+        tools:layout="@layout/fragment_saved_ingredients" />
+
+    <fragment
         android:id="@+id/menu_settings"
         android:name="com.example.recipegpt.fragments.settings.SettingsFragment"
         android:label="@string/menu_settings"
