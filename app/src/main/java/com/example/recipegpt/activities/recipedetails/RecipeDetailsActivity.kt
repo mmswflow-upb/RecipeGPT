@@ -1,5 +1,6 @@
 package com.example.recipegpt.activities.recipedetails
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -38,6 +39,11 @@ class RecipeDetailsActivity : AppCompatActivity() {
         binding.cookButton.setOnClickListener {
             // Cook functionality (to be implemented)
         }
+
+        //Share button
+        binding.shareButton.setOnClickListener {
+            shareRecipeDetails()
+        }
     }
 
     private fun displayRecipeDetails(recipe: Recipe) {
@@ -70,5 +76,45 @@ class RecipeDetailsActivity : AppCompatActivity() {
                 getString(R.string.instruction_step_placeholder, index + 1, instruction)
             binding.instructionsList.addView(instructionView)
         }
+
+
+
+    }
+
+    private fun shareRecipeDetails() {
+
+        val recipe = viewModel.recipe.value!!
+
+        val recipeDetails = buildRecipeDetailsText(recipe)
+
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, "Check out this recipe: ${recipe.title}")
+            putExtra(Intent.EXTRA_TEXT, recipeDetails)
+        }
+
+        startActivity(Intent.createChooser(shareIntent, "Share Recipe"))
+    }
+
+    private fun buildRecipeDetailsText(recipe: Recipe): String {
+        val ingredients = recipe.ingredients.joinToString("\n") {
+            "- ${it.amount} ${it.unit} of ${it.item}"
+        }
+
+        val instructions = recipe.instructions.joinToString("\n") { step ->
+            "Step ${recipe.instructions.indexOf(step) + 1}: $step"
+        }
+
+        return """
+            Recipe: ${recipe.title}
+            Cooking Time: ${recipe.estimatedCookingTime} minutes
+            Servings: ${recipe.servings}
+
+            Ingredients:
+            $ingredients
+
+            Instructions:
+            $instructions
+        """.trimIndent()
     }
 }

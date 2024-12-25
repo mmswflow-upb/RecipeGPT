@@ -1,6 +1,7 @@
 package com.example.recipegpt.utils
 
 import android.app.Notification
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
@@ -11,8 +12,8 @@ import com.example.recipegpt.activities.home.HomeActivity
 
 object NotificationUtils {
 
-    private const val CHANNEL_ID = "RecipeGPTPersistentNotifications"
-
+    private const val CHANNEL_ID = "RecipeGPTNotifications"
+    private const val CHANNEL_NAME = "RecipeGPT Notifications"
 
     fun createPersistentNotification(
         context: Context,
@@ -76,4 +77,22 @@ object NotificationUtils {
             .setContentIntent(pendingIntent) // Set the click action
             .build()
     }
+
+    fun createNotificationChannel(context: Context) {
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Check if the channel already exists
+        if (notificationManager.getNotificationChannel(CHANNEL_ID) == null) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_LOW // No sound or vibration
+            ).apply {
+                description = "Channel for displaying persistent notifications"
+            }
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
 }

@@ -33,5 +33,6 @@
     <string name="instruction_step_placeholder">Step %1$d: %2$s</string>
     <string name="ingredient_amount_placeholder">%1$s %2$s</string>
     <string name="recipe_description_placeholder">Servings: %1$d, Time: %2$d min</string>
+    <string name="share_button_description">Share this recipe</string>
 
 </resources>
