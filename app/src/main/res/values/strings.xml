@@ -34,5 +34,17 @@
     <string name="ingredient_amount_placeholder">%1$s %2$s</string>
     <string name="recipe_description_placeholder">Servings: %1$d, Time: %2$d min</string>
     <string name="share_button_description">Share this recipe</string>
+    <string name="cooking_quote_notification_title">Cooking Quote</string>
+    <string name="error">Error</string>
+    <string name="failed_to_fetch_random_quote">Failed to fetch a random quote. Please try again later.</string>
+    <string name="network_error">Network error: %1$s</string>
+    <string name="unexpected_error">Unexpected error: %1$s</string>
+    <string name="recipes_search_title">Recipes Search</string>
+    <string name="recipes_search_complete_title">Recipes Search Complete</string>
+    <string name="unknown_query">unknown query</string>
+    <string name="search_starting_message">Starting the search…</string>
+    <string name="search_in_progress_message">Searching recipes for &quot;%1$s&quot;…</string>
+    <string name="search_elapsed_time_message">Searching recipes for &quot;%1$s&quot;… (%2$d seconds elapsed)</string>
+    <string name="search_complete_message">It took %1$d seconds to find recipes for &quot;%2$s&quot;</string>
 
 </resources>

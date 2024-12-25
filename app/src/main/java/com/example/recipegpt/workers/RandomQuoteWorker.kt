@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.example.recipegpt.R
 import com.example.recipegpt.network.ApiClient
 import com.example.recipegpt.network.ApiInterface
 import com.example.recipegpt.utils.NotificationUtils
@@ -24,7 +25,7 @@ class RandomQuoteWorker(context: Context, workerParams: WorkerParameters) : Work
                 // Show the quote as a notification
                 NotificationUtils.showStandardNotification(
                     applicationContext,
-                    "Cooking Quote",
+                    applicationContext.getString(R.string.cooking_quote_notification_title),
                     quote,
                     randomQuoteNotificationId
 
@@ -33,28 +34,24 @@ class RandomQuoteWorker(context: Context, workerParams: WorkerParameters) : Work
             } else {
                 NotificationUtils.showStandardNotification(
                     applicationContext,
-                    "Error",
-                    "Failed to fetch a random quote. Please try again later.",
+                    applicationContext.getString(R.string.error),
+                    applicationContext.getString(R.string.failed_to_fetch_random_quote),
                     randomQuoteNotificationId
                 )
             }
         } catch (e: HttpException) {
             NotificationUtils.showStandardNotification(
                 applicationContext,
-                "Error",
-                "Network error: ${e.message}",
+                applicationContext.getString(R.string.error),
+                applicationContext.getString(R.string.network_error, e.message),
                 randomQuoteNotificationId
-
-
             )
         } catch (e: Exception) {
             NotificationUtils.showStandardNotification(
                 applicationContext,
-                "Error",
-                "Unexpected error: ${e.message}",
+                applicationContext.getString(R.string.error),
+                applicationContext.getString(R.string.unexpected_error, e.message),
                 randomQuoteNotificationId
-
-
             )
         }
 
