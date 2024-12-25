@@ -14,5 +14,7 @@
 
 
     <color name="redDark">#B00020</color> <!-- Red -->
+    <color name="redLight">#F00808</color> <!-- Red -->
+
 </resources>
 

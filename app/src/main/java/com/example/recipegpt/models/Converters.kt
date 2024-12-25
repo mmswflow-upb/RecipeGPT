@@ -1,8 +1,6 @@
-package com.example.recipegpt.data.converters
+package com.example.recipegpt.models
 
 import androidx.room.TypeConverter
-import com.example.recipegpt.models.Ingredient
-import com.example.recipegpt.models.QuantUnit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import retrofit2.Converter
@@ -21,7 +19,9 @@ class Converters {
     @TypeConverter
     fun toIngredientList(data: String): List<Ingredient> {
         val listType = object : TypeToken<List<Ingredient>>() {}.type
-        return gson.fromJson(data, listType)
+        return gson.fromJson<List<Ingredient>>(data, listType).map {
+            ingredient : Ingredient -> ingredient.copy(item= ingredient.item.lowercase())
+        }
     }
 
     @TypeConverter

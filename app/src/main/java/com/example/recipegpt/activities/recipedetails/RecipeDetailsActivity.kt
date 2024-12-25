@@ -1,7 +1,9 @@
 package com.example.recipegpt.activities.recipedetails
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.recipegpt.R
@@ -31,21 +33,46 @@ class RecipeDetailsActivity : AppCompatActivity() {
             }
         }
 
-        // Handle button clicks
+        // Observe the saved status to update the save button
+        viewModel.isRecipeSaved.observe(this) { isSaved ->
+            updateSaveButton(isSaved)
+        }
+
+        viewModel.ingredientAvailability.observe(this) { availability ->
+            //Remove old views when updating the list of ingredients (checking if there's enough of each ingredient or not)
+            binding.ingredientsList.removeAllViews()
+            recipe?.ingredients?.forEach { ingredient ->
+                val ingredientView = layoutInflater.inflate(R.layout.item_ingredient, binding.ingredientsList, false)
+                val ingredientBinding = com.example.recipegpt.databinding.ItemIngredientBinding.bind(ingredientView)
+                ingredientBinding.ingredientName.text = ingredient.item
+                ingredientBinding.ingredientAmount.text = getString(
+                    R.string.ingredient_amount_placeholder,
+                    ingredient.amount,
+                    ingredient.unit
+                )
+                val isAvailable = availability[ingredient.item] ?: false
+                ingredientBinding.ingredientAmount.setTextColor(if (isAvailable) resources.getColor(R.color.greenPrimary, null) else resources.getColor(R.color.redDark, null))
+                binding.ingredientsList.addView(ingredientView)
+            }
+        }
+
+
+        // Save button handler
         binding.saveButton.setOnClickListener {
-            // Save functionality (to be implemented)
+
+            viewModel.toggleRecipeSavedStatus()
         }
 
         binding.cookButton.setOnClickListener {
             // Cook functionality (to be implemented)
         }
 
-        //Share button
         binding.shareButton.setOnClickListener {
             shareRecipeDetails()
         }
     }
 
+    //Populate the lists with ingredients and steps
     private fun displayRecipeDetails(recipe: Recipe) {
         // Populate static fields
         binding.recipeTitle.text = recipe.title
@@ -67,7 +94,6 @@ class RecipeDetailsActivity : AppCompatActivity() {
         }
 
         // Populate instructions
-
         binding.instructionsList.removeAllViews()
         recipe.instructions.forEachIndexed { index, instruction ->
             val instructionView = layoutInflater.inflate(R.layout.item_instruction, binding.instructionsList, false)
@@ -76,45 +102,52 @@ class RecipeDetailsActivity : AppCompatActivity() {
                 getString(R.string.instruction_step_placeholder, index + 1, instruction)
             binding.instructionsList.addView(instructionView)
         }
-
-
-
     }
 
     private fun shareRecipeDetails() {
-
-        val recipe = viewModel.recipe.value!!
-
+        val recipe = viewModel.recipe.value ?: return
         val recipeDetails = buildRecipeDetailsText(recipe)
-
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
             putExtra(Intent.EXTRA_SUBJECT, "Check out this recipe: ${recipe.title}")
             putExtra(Intent.EXTRA_TEXT, recipeDetails)
         }
-
         startActivity(Intent.createChooser(shareIntent, "Share Recipe"))
     }
 
+    //Building the text containing recipe details to share it through other apps
     private fun buildRecipeDetailsText(recipe: Recipe): String {
-        val ingredients = recipe.ingredients.joinToString("\n\n") {
+        val ingredients = recipe.ingredients.joinToString("\n") {
             "- ${it.amount} ${it.unit} of ${it.item}"
         }
-
-        val instructions = recipe.instructions.joinToString("\n\n") { step ->
+        val instructions = recipe.instructions.joinToString("\n") { step ->
             "Step ${recipe.instructions.indexOf(step) + 1}: $step"
         }
-
         return """
             Recipe: ${recipe.title}
             Cooking Time: ${recipe.estimatedCookingTime} minutes
             Servings: ${recipe.servings}
-
             Ingredients:
             $ingredients
-
             Instructions:
             $instructions
         """.trimIndent()
+    }
+
+    private fun updateSaveButton(isSaved: Boolean) {
+        Log.d("RecipeDetailsViewModel-updateSaveButton", "Is recipe saved: $isSaved")
+        if (isSaved) {
+            binding.saveButton.text = getString(R.string.unsave_button_text)
+            binding.saveButton.setTextColor(resources.getColor(R.color.redLight, null))
+            binding.saveButton.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.redLight, null))
+
+
+        } else {
+            binding.saveButton.text = getString(R.string.save_button_text)
+            binding.saveButton.setTextColor(resources.getColor(R.color.greenPrimary, null))
+            binding.saveButton.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.greenPrimary, null))
+
+
+        }
     }
 }

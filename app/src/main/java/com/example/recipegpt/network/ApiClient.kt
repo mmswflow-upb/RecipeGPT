@@ -1,7 +1,7 @@
 package com.example.recipegpt.network
 
 import com.example.recipegpt.BuildConfig
-import com.example.recipegpt.data.converters.EnumConverterFactory
+import com.example.recipegpt.models.EnumConverterFactory
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

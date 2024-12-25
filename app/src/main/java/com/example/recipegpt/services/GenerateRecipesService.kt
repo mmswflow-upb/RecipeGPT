@@ -6,7 +6,6 @@ import android.os.Binder
 import android.os.IBinder
 import com.example.recipegpt.data.AppDatabase
 import com.example.recipegpt.data.dao.RecipeDao
-import com.example.recipegpt.data.entities.RecipeEntity
 import com.example.recipegpt.models.Recipe
 import com.example.recipegpt.network.ApiClient
 import com.example.recipegpt.network.ApiInterface
@@ -61,27 +60,7 @@ class GenerateRecipeService : Service() {
         }
     }
 
-    /**
-     * Save a single recipe to the Room database.
-     */
-    fun saveRecipe(recipe: Recipe) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val recipeEntity = RecipeEntity(
-                id = generateRecipeId(), // Generate or pass a unique ID
-                title = recipe.title,
-                estimatedCookingTime = recipe.estimatedCookingTime,
-                servings = recipe.servings,
-                ingredients = recipe.ingredients,
-                instructions = recipe.instructions
-            )
-            recipeDao.insertRecipe(recipeEntity)
-        }
-    }
 
-    // Helper function to generate a unique ID (if not already provided)
-    private fun generateRecipeId(): Int {
-        return (System.currentTimeMillis() % Int.MAX_VALUE).toInt()
-    }
 
     override fun onBind(intent: Intent?): IBinder {
         return binder

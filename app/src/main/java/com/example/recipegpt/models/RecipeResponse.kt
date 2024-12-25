@@ -24,6 +24,8 @@ data class Ingredient(
     @SerializedName("unit") val unit: String
 ) : Parcelable
 
+
+
 enum class QuantUnit(val unit: String) {
     grams("grams"),
     kilograms("kilograms"),

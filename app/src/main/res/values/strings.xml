@@ -4,7 +4,6 @@
 
     <string name="search_hint">Generate recipes…</string>
 
-    <string name="add_recipe">Add Recipe</string>
 
     <string name="no_recipes">No Recipes</string>
     <string name="saved_recipes">Saved Recipes</string>
@@ -21,7 +20,7 @@
     <string name="save_button_label">Save Settings</string>
     <string name="random_quote_fetching_frequency">Random Quote Fetching Frequency</string>
     <string name="random_quote_frequency_description">Set how often random quotes should be fetched.</string>
-    <string name="max_results_description">Set the maximum number of recipes to display in search results. The more results the slower the search.</string>
+    <string name="max_results_description">Set the maximum number of recipes to display in generated results. The more results the slower the process.</string>
     <string name="recipe_title_placeholder">Recipe Title</string>
     <string name="cooking_time_placeholder">Cooking Time: %1$d mins</string>
     <string name="servings_placeholder">Servings: %1$d</string>
@@ -39,13 +38,15 @@
     <string name="failed_to_fetch_random_quote">Failed to fetch a random quote. Please try again later.</string>
     <string name="network_error">Network error: %1$s</string>
     <string name="unexpected_error">Unexpected error: %1$s</string>
-    <string name="recipes_search_title">Recipes Search</string>
-    <string name="recipes_search_complete_title">Recipes Search Complete</string>
+    <string name="recipes_search_title">Recipes Generation</string>
+    <string name="recipes_search_complete_title">Recipes Generation Complete</string>
     <string name="unknown_query">unknown query</string>
-    <string name="search_starting_message">Starting the search…</string>
-    <string name="search_in_progress_message">Searching recipes for &quot;%1$s&quot;…</string>
-    <string name="search_elapsed_time_message">Searching recipes for &quot;%1$s&quot;… (%2$d seconds elapsed)</string>
-    <string name="search_complete_message">It took %1$d seconds to find recipes for &quot;%2$s&quot;</string>
+    <string name="search_starting_message">Calling the API…</string>
+    <string name="search_in_progress_message">Generating recipes with &quot;%1$s&quot;…</string>
+    <string name="search_elapsed_time_message">Generating recipes with &quot;%1$s&quot;… (%2$d seconds elapsed)</string>
+    <string name="search_complete_message">It took %1$d seconds to generate recipes with &quot;%2$s&quot;</string>
     <string name="menu_saved_ingredients">Ingredients</string>
+    <string name="unsave_button_text">Unsave</string>
+    <string name="save_button_text">Save</string>
 
 </resources>

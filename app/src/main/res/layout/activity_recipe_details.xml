@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="70dp">
+        android:layout_marginTop="45dp">
 
         <!-- Recipe Details Section -->
         <LinearLayout
@@ -94,7 +94,7 @@
                 android:id="@+id/ingredientsList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"></LinearLayout>
+                android:orientation="vertical"/>
 
             <View
                 android:layout_width="match_parent"
@@ -124,7 +124,7 @@
                 android:id="@+id/instructionsList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"></LinearLayout>
+                android:orientation="vertical"/>
 
             <View
                 android:layout_width="match_parent"
@@ -166,6 +166,7 @@
                 android:src="@drawable/ic_share"
                 android:contentDescription="@string/share_button_description"
                 android:background="@drawable/rounded_rectangle_border"
+
                 app:tint="?attr/colorPrimary" />
         </LinearLayout>
 
