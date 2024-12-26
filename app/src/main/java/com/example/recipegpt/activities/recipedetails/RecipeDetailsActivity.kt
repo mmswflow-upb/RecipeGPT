@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.recipegpt.R
 import com.example.recipegpt.databinding.ActivityRecipeDetailsBinding
+import com.example.recipegpt.models.QuantUnit
 import com.example.recipegpt.models.Recipe
 
 class RecipeDetailsActivity : AppCompatActivity() {
@@ -38,23 +39,33 @@ class RecipeDetailsActivity : AppCompatActivity() {
             updateSaveButton(isSaved)
         }
 
+        //Update the colors of the ingredient amounts in case there's a change in the saved ingredients DB
         viewModel.ingredientAvailability.observe(this) { availability ->
-            //Remove old views when updating the list of ingredients (checking if there's enough of each ingredient or not)
+            // Remove old views when updating the list of ingredients
             binding.ingredientsList.removeAllViews()
             recipe?.ingredients?.forEach { ingredient ->
                 val ingredientView = layoutInflater.inflate(R.layout.item_ingredient, binding.ingredientsList, false)
                 val ingredientBinding = com.example.recipegpt.databinding.ItemIngredientBinding.bind(ingredientView)
+
+                // Convert the unit display
+                val displayUnit = convertUnitDisplay(ingredient.unit)
+
+
                 ingredientBinding.ingredientName.text = ingredient.item
                 ingredientBinding.ingredientAmount.text = getString(
                     R.string.ingredient_amount_placeholder,
                     ingredient.amount,
-                    ingredient.unit
+                    displayUnit
                 )
                 val isAvailable = availability[ingredient.item] ?: false
-                ingredientBinding.ingredientAmount.setTextColor(if (isAvailable) resources.getColor(R.color.greenPrimary, null) else resources.getColor(R.color.redDark, null))
+                ingredientBinding.ingredientAmount.setTextColor(
+                    if (isAvailable) resources.getColor(R.color.greenPrimary, null)
+                    else resources.getColor(R.color.redDark, null)
+                )
                 binding.ingredientsList.addView(ingredientView)
             }
         }
+
 
 
         // Save button handler
@@ -72,7 +83,6 @@ class RecipeDetailsActivity : AppCompatActivity() {
         }
     }
 
-    //Populate the lists with ingredients and steps
     private fun displayRecipeDetails(recipe: Recipe) {
         // Populate static fields
         binding.recipeTitle.text = recipe.title
@@ -84,11 +94,15 @@ class RecipeDetailsActivity : AppCompatActivity() {
         recipe.ingredients.forEach { ingredient ->
             val ingredientView = layoutInflater.inflate(R.layout.item_ingredient, binding.ingredientsList, false)
             val ingredientBinding = com.example.recipegpt.databinding.ItemIngredientBinding.bind(ingredientView)
+
+            // Convert the unit display
+            val displayUnit = convertUnitDisplay(ingredient.unit)
+
             ingredientBinding.ingredientName.text = ingredient.item
             ingredientBinding.ingredientAmount.text = getString(
                 R.string.ingredient_amount_placeholder,
                 ingredient.amount,
-                ingredient.unit
+                displayUnit
             )
             binding.ingredientsList.addView(ingredientView)
         }
@@ -104,6 +118,44 @@ class RecipeDetailsActivity : AppCompatActivity() {
         }
     }
 
+    //Normalize the strings for units
+    private fun convertUnitDisplay(unit: String): String {
+        Log.d("RecipeDetailsActivity", "Input unit: $unit")
+
+        return when (unit) {
+            QuantUnit.tablespoons_solids_plants_powders.unit -> {
+                Log.d("RecipeDetailsActivity", "Unit matches: tablespoons_solids_plants_powders")
+                getString(R.string.tablespoons)
+            }
+            QuantUnit.teaspoons_solids_plants_powders.unit -> {
+                Log.d("RecipeDetailsActivity", "Unit matches: teaspoons_solids_plants_powders")
+                getString(R.string.teaspoons)
+            }
+            QuantUnit.piece_about_50_grams.unit -> {
+                Log.d("RecipeDetailsActivity", "Unit matches: piece_about_50_grams")
+                getString(R.string.piece_about_50_grams)
+            }
+            QuantUnit.piece_about_100_grams.unit -> {
+                Log.d("RecipeDetailsActivity", "Unit matches: piece_about_100_grams")
+                getString(R.string.piece_about_100_grams)
+            }
+            QuantUnit.piece_about_250_grams.unit -> {
+                Log.d("RecipeDetailsActivity", "Unit matches: piece_about_250_grams")
+                getString(R.string.piece_about_250_grams)
+            }
+            QuantUnit.whole_pieces.unit -> {
+                Log.d("RecipeDetailsActivity", "Unit matches: whole_pieces")
+                getString(R.string.whole_pieces)
+            }
+            else -> {
+                Log.d("RecipeDetailsActivity", "Unit does not match any predefined units. Using input unit: $unit")
+                unit
+            }
+        }
+    }
+
+
+
     private fun shareRecipeDetails() {
         val recipe = viewModel.recipe.value ?: return
         val recipeDetails = buildRecipeDetailsText(recipe)
@@ -118,21 +170,23 @@ class RecipeDetailsActivity : AppCompatActivity() {
     //Building the text containing recipe details to share it through other apps
     private fun buildRecipeDetailsText(recipe: Recipe): String {
         val ingredients = recipe.ingredients.joinToString("\n") {
-            "- ${it.amount} ${it.unit} of ${it.item}"
+            val displayUnit = convertUnitDisplay(it.unit)
+            "- ${it.amount} $displayUnit of ${it.item}"
         }
         val instructions = recipe.instructions.joinToString("\n") { step ->
             "Step ${recipe.instructions.indexOf(step) + 1}: $step"
         }
         return """
-            Recipe: ${recipe.title}
-            Cooking Time: ${recipe.estimatedCookingTime} minutes
-            Servings: ${recipe.servings}
-            Ingredients:
-            $ingredients
-            Instructions:
-            $instructions
-        """.trimIndent()
+        Recipe: ${recipe.title}
+        Cooking Time: ${recipe.estimatedCookingTime} minutes
+        Servings: ${recipe.servings}
+        Ingredients:
+        $ingredients
+        Instructions:
+        $instructions
+    """.trimIndent()
     }
+
 
     private fun updateSaveButton(isSaved: Boolean) {
         Log.d("RecipeDetailsViewModel-updateSaveButton", "Is recipe saved: $isSaved")

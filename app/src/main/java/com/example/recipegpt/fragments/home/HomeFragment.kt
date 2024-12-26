@@ -86,7 +86,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             viewModel.updateSearchingStatus(true)
             lifecycleScope.launch {
 
-                viewModel.searchRecipes(query)
+                viewModel.generateRecipes(query)
             }
         }
 

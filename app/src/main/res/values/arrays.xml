@@ -13,5 +13,21 @@
         <item>@string/most_servings_filter</item>
         <item>@string/shortest_cooking_time</item>
     </string-array>
+    <string-array name="quantity_units">
+        <item>@string/kilograms</item>
+        <item>@string/grams</item>
+        <item>@string/liters</item>
+        <item>@string/milliliters</item>
+        <item>@string/cups</item>
+        <item>@string/tablespoons</item>
+        <item>@string/teaspoons</item>
+        <item>@string/whole_pieces</item>
+        <item>@string/teaspoons_solid</item>
+        <item>@string/tablespoons_solid</item>
+        <item>@string/piece_about_50_grams</item>
+        <item>@string/piece_about_100_grams</item>
+        <item>@string/piece_about_250_grams</item>
+
+    </string-array>
 
 </resources>

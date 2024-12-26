@@ -18,6 +18,7 @@ import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.recipegpt.models.QuantUnit
 import com.example.recipegpt.models.Recipe
 import com.example.recipegpt.services.GenerateRecipeService
 import com.example.recipegpt.services.SearchNotificationForegroundService
@@ -157,7 +158,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         context.startService(intent)
     }
 
-    fun searchRecipes(query: String) {
+    fun generateRecipes(query: String) {
         val context = getApplication<Application>().applicationContext
 
         if (_isBound.value == true && _recipeService != null) {
@@ -166,8 +167,26 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             // Start the foreground service
             startSearchNotificationService(context, query)
 
-            _recipeService?.searchRecipes(query, _numberOfRecipes.value ?: 2) { recipes ->
-                updateRecipes(recipes)
+            _recipeService?.generateRecipes(query, _numberOfRecipes.value ?: 2) { recipes ->
+                val updatedRecipes = recipes.map { recipe ->
+                    recipe.copy(
+                        ingredients = recipe.ingredients.map { ingredient ->
+                            val unit = try {
+                                QuantUnit.valueOf(ingredient.unit)
+                                ingredient.unit // Valid unit
+                            } catch (e: IllegalArgumentException) {
+                                Log.d("HomeViewModel-generateRecipes","${ingredient.item}: Unit didnt match enum, converting to whole_pieces")
+                                 QuantUnit.whole_pieces.unit // Replace with default
+
+                            }
+
+
+                            ingredient.copy(unit = unit)
+                        }
+                    )
+                }
+
+                updateRecipes(updatedRecipes)
                 updateSearchingStatus(false)
 
                 // Stop the foreground service
@@ -175,6 +194,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
 
 
 

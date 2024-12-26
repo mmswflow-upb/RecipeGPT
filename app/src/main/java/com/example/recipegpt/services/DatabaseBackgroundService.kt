@@ -13,7 +13,9 @@ import com.example.recipegpt.data.entities.toIngredientModel
 import com.example.recipegpt.data.entities.toRecipeEntity
 import com.example.recipegpt.data.entities.toRecipeModel
 import com.example.recipegpt.models.Ingredient
+import com.example.recipegpt.models.QuantUnit
 import com.example.recipegpt.models.Recipe
+import com.example.recipegpt.models.UnitConverter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -130,7 +132,7 @@ class DatabaseBackgroundService : Service() {
     private fun getSavedIngredients(resultReceiver: ResultReceiver?) {
         CoroutineScope(Dispatchers.IO).launch {
             val ingredients = database.ingredientDao().getAllIngredientsSync()
-            val ingredientModels = ingredients?.map { it.toIngredientModel() } ?: emptyList()
+            val ingredientModels = ingredients?.map { it.toIngredientModel() } ?: emptyList<Ingredient>()
             val bundle = Bundle().apply {
                 putParcelableArrayList("data", ArrayList(ingredientModels))
             }
@@ -153,18 +155,45 @@ class DatabaseBackgroundService : Service() {
         CoroutineScope(Dispatchers.IO).launch {
             val ingredientEntity = ingredient.toIngredientEntity()
             val existingIngredient = database.ingredientDao().getIngredientByNameSync(ingredientEntity.item)
+
             if (existingIngredient != null) {
+                // Use UnitConverter to add the amounts
+                val (updatedAmount, updatedUnit) = UnitConverter.add(
+                    existingIngredient.amount,
+                    QuantUnit.valueOf(existingIngredient.unit),
+                    ingredientEntity.amount,
+                    QuantUnit.valueOf(ingredientEntity.unit)
+                )
+
                 val updatedIngredient = existingIngredient.copy(
-                    amount = existingIngredient.amount + ingredientEntity.amount
+                    amount = updatedAmount,
+                    unit = updatedUnit.name
                 )
                 database.ingredientDao().updateIngredient(updatedIngredient)
             } else {
-                database.ingredientDao().insertIngredient(ingredientEntity)
+                // Normalize the ingredient before inserting
+                val optimalUnit = UnitConverter.getOptimalUnit(
+                    ingredientEntity.amount,
+                    QuantUnit.valueOf(ingredientEntity.unit)
+                )
+                val normalizedAmount = UnitConverter.convert(
+                    ingredientEntity.amount,
+                    QuantUnit.valueOf(ingredientEntity.unit),
+                    optimalUnit
+                )
+
+                val normalizedIngredient = ingredientEntity.copy(
+                    amount = normalizedAmount,
+                    unit = optimalUnit.name
+                )
+                database.ingredientDao().insertIngredient(normalizedIngredient)
             }
+
             resultReceiver?.send(0, null)
             notifyDatabaseChanged()
         }
     }
+
 
     private fun deleteIngredientByName(name: String, resultReceiver: ResultReceiver?) {
         CoroutineScope(Dispatchers.IO).launch {

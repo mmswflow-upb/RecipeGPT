@@ -34,6 +34,8 @@
         android:background="?attr/background"
         android:elevation="0dp"
         app:itemIconTint="?attr/colorOnSecondary"
+        app:itemTextAppearanceActive="@style/BottomNavLabel"
+        app:itemTextAppearanceInactive="@style/BottomNavLabel"
         app:itemTextColor="?attr/colorPrimary"
         app:menu="@menu/bottom_navigation_menu"
         />
