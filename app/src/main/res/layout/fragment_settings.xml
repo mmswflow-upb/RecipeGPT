@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="45dp"
+    android:layout_marginTop="25dp"
     android:padding="16dp"
 
     >
@@ -18,10 +18,10 @@
             android:id="@+id/titleTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/app_title"
+            android:text="@string/settings"
             android:textColor="?attr/colorPrimary"
             android:textSize="24sp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="40dp"
             android:gravity="center"
             android:textStyle="bold" />
         <!-- Random Quote Fetching Frequency -->
@@ -63,7 +63,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentTop="true"
-                android:padding="8dp"
                 android:minHeight="48dp"
                 android:entries="@array/quote_fetching_frequencies" />
         </RelativeLayout>

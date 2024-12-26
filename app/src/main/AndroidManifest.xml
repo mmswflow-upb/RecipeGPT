@@ -22,7 +22,8 @@
         tools:targetApi="35">
         <activity
             android:name=".activities.home.HomeActivity"
-            android:exported="true">
+            android:exported="true"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -33,7 +34,8 @@
         <activity
             android:name=".activities.recipedetails.RecipeDetailsActivity"
             android:label="@string/recipe_details_page_title"
-            android:exported="true">
+            android:exported="true"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />

@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="45dp">
+        android:layout_marginTop="25dp">
 
         <!-- Recipe Details Section -->
         <LinearLayout
@@ -29,7 +29,7 @@
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorPrimary"
-                android:layout_marginBottom="24dp" />
+                android:layout_marginBottom="40dp" />
 
             <!-- Recipe Title -->
             <TextView

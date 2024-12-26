@@ -25,7 +25,7 @@
     <fragment
         android:id="@+id/menu_saved_ingredients"
         android:name="com.example.recipegpt.fragments.savedingredients.SavedIngredientsFragment"
-        android:label="@string/menu_shopping_list"
+        android:label="@string/menu_saved_ingredients"
         tools:layout="@layout/fragment_saved_ingredients" />
 
     <fragment

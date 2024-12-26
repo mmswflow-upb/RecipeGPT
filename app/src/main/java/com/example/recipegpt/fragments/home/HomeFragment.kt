@@ -1,8 +1,10 @@
 package com.example.recipegpt.fragments.home
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -40,7 +42,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         setupObservers()
 
         // Handle search bar interaction
-        binding.searchEditText.setOnEditorActionListener { v, actionId, _ ->
+        binding.generateRecipesEditText.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
                 val query = v.text.toString().trim()
                 if (query.isNotEmpty()) {
@@ -51,6 +53,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 } else {
                     Toast.makeText(requireContext(), "Enter a search query", Toast.LENGTH_SHORT).show()
                 }
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(v.windowToken, 0)
+
+                // Clear focus from EditText
+                binding.generateRecipesEditText.clearFocus()
                 true
             } else {
                 false
@@ -60,11 +67,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun setupObservers() {
         viewModel.query.observe(viewLifecycleOwner) { query ->
-            binding.searchEditText.setText(query)
+            binding.generateRecipesEditText.setText(query)
         }
 
         viewModel.isSearching.observe(viewLifecycleOwner) { isSearching ->
-            binding.searchProgressBar.visibility = if (isSearching) View.VISIBLE else View.INVISIBLE
+            binding.generateProgressBar.visibility = if (isSearching) View.VISIBLE else View.INVISIBLE
         }
 
         viewModel.recipes.observe(viewLifecycleOwner) { recipes ->

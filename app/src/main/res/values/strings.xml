@@ -27,7 +27,7 @@
     <string name="ingredients_header">Ingredients</string>
     <string name="instructions_header">Instructions</string>
     <string name="save_button">Save</string>
-    <string name="cook_button">Cook</string>
+    <string name="cook_button">Cooked</string>
     <string name="recipe_details_page_title">Recipe Details</string>
     <string name="instruction_step_placeholder">Step %1$d: %2$s</string>
     <string name="ingredient_amount_placeholder">%1$s %2$s</string>
@@ -48,5 +48,15 @@
     <string name="menu_saved_ingredients">Ingredients</string>
     <string name="unsave_button_text">Unsave</string>
     <string name="save_button_text">Save</string>
+    <string name="saved_recipes_search_hint">Search for saved recipes</string>
+    <string name="filter">Filter saved recipes</string>
+    <string name="most_recent_filter">Most Recent</string>
+    <string name="most_servings_filter">Most Servings</string>
+    <string name="shortest_cooking_time">Shortest cooking time</string>
 
+    <string name="minutes_15">15 minutes</string>
+    <string name="hour_1">1 hour</string>
+    <string name="hours_3">3 hours</string>
+    <string name="once_per_day">Once per day</string>
+    <string name="never">Never</string>
 </resources>

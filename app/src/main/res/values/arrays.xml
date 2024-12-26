@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="quote_fetching_frequencies">
-        <item>15 minutes</item>
-        <item>1 hour</item>
-        <item>3 hours</item>
-        <item>Once per day</item>
-        <item>Never</item>
+        <item>@string/minutes_15</item>
+        <item>@string/hour_1</item>
+        <item>@string/hours_3</item>
+        <item>@string/once_per_day</item>
+        <item>@string/never</item>
     </string-array>
+
+    <string-array name="saved_recipes_list_filters">
+        <item>@string/most_recent_filter</item>
+        <item>@string/most_servings_filter</item>
+        <item>@string/shortest_cooking_time</item>
+    </string-array>
+
 </resources>

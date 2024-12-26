@@ -7,15 +7,11 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.recipegpt.data.entities.RecipeEntity
-import com.example.recipegpt.models.Recipe
 
 @Dao
 interface RecipeDao {
     @Query("SELECT * FROM recipes")
-    fun getAllRecipes(): LiveData<List<RecipeEntity>>
-
-    @Query("SELECT * FROM recipes WHERE title = :name")
-    fun getRecipeByName(name: String): LiveData<RecipeEntity?>
+    suspend fun getAllRecipesSync(): List<RecipeEntity>?
 
     @Query("SELECT * FROM recipes WHERE title = :name")
     suspend fun getRecipeByNameSync(name: String): RecipeEntity?

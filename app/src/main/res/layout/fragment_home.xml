@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/background"
-    android:layout_marginTop="45dp"
+    android:layout_marginTop="25dp"
     android:padding="16dp"
     >
 
@@ -19,9 +19,10 @@
         android:text="@string/app_title"
         android:textColor="?attr/colorPrimary"
         android:textSize="24sp"
+        android:layout_marginBottom="40dp"
         android:textStyle="bold" />
 
-    <!-- Row Containing Search Bar and Plus Button -->
+    <!-- Row Containing Search Bar and Progress Bar -->
     <LinearLayout
         android:id="@+id/searchRow"
         android:layout_width="match_parent"
@@ -40,19 +41,17 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="10"
-
             app:boxBackgroundMode="filled"
             app:boxBackgroundColor="@android:color/transparent"
             app:boxStrokeColor="@android:color/transparent">
 
             <EditText
-                android:id="@+id/searchEditText"
+                android:id="@+id/generateRecipesEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/search_hint"
                 android:inputType="text"
                 android:textSize="18sp"
-
                 android:textColor="?attr/colorOnBackground"
                 android:textColorHint="?attr/colorOnSurface"
                 android:backgroundTint="@android:color/transparent"
@@ -64,7 +63,7 @@
 
         <!-- Search Button -->
         <ProgressBar
-            android:id="@+id/searchProgressBar"
+            android:id="@+id/generateProgressBar"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_weight="1"

@@ -12,10 +12,8 @@ import com.example.recipegpt.models.Ingredient
 @Dao
 interface IngredientDao {
     @Query("SELECT * FROM ingredients")
-    fun getAllIngredients(): LiveData<List<IngredientEntity>>
+    suspend fun getAllIngredientsSync(): List<IngredientEntity>?
 
-    @Query("SELECT * FROM ingredients WHERE item = :name")
-    fun getIngredientByName(name: String): LiveData<IngredientEntity?>
 
     @Query("SELECT * FROM ingredients WHERE item = :name")
     suspend fun getIngredientByNameSync(name: String): IngredientEntity?

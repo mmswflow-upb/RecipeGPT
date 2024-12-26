@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.IBinder
 import android.os.ResultReceiver
 import android.util.Log
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.recipegpt.data.AppDatabase
 import com.example.recipegpt.data.entities.toIngredientEntity
 import com.example.recipegpt.data.entities.toIngredientModel
@@ -21,6 +22,13 @@ class DatabaseBackgroundService : Service() {
 
     // Database instance
     private lateinit var database: AppDatabase
+
+    // Notify listeners about database changes
+    private fun notifyDatabaseChanged() {
+        val intent = Intent("com.example.recipegpt.LOCAL_DB_CHANGED")
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+        Log.d("DBBackgroundService-notifyDatabaseChanged", "Notifying other viewmodels of the changes in the db")
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -73,8 +81,11 @@ class DatabaseBackgroundService : Service() {
 
     private fun getSavedRecipes(resultReceiver: ResultReceiver?) {
         CoroutineScope(Dispatchers.IO).launch {
-            val recipes = database.recipeDao().getAllRecipes()
-            val recipeModels = recipes.value?.map { it.toRecipeModel() } ?: emptyList()
+            val recipes = database.recipeDao().getAllRecipesSync()
+            Log.d("DBBackgroundService-getSavedRecipes", "recipeEntities: ${recipes?.size}")
+
+            val recipeModels = recipes?.map { it.toRecipeModel() } ?: emptyList()
+            Log.d("DBBackgroundService-getSavedRecipes", "recipeModels: $recipeModels")
             val bundle = Bundle().apply {
                 putParcelableArrayList("data", ArrayList(recipeModels))
             }
@@ -103,6 +114,7 @@ class DatabaseBackgroundService : Service() {
                 database.recipeDao().insertRecipe(recipeEntity)
             }
             resultReceiver?.send(0, null)
+            notifyDatabaseChanged()
         }
     }
 
@@ -111,12 +123,14 @@ class DatabaseBackgroundService : Service() {
             database.recipeDao().deleteRecipeByName(name)
             resultReceiver?.send(0, null)
         }
+        notifyDatabaseChanged()
+
     }
 
     private fun getSavedIngredients(resultReceiver: ResultReceiver?) {
         CoroutineScope(Dispatchers.IO).launch {
-            val ingredients = database.ingredientDao().getAllIngredients()
-            val ingredientModels = ingredients.value?.map { it.toIngredientModel() } ?: emptyList()
+            val ingredients = database.ingredientDao().getAllIngredientsSync()
+            val ingredientModels = ingredients?.map { it.toIngredientModel() } ?: emptyList()
             val bundle = Bundle().apply {
                 putParcelableArrayList("data", ArrayList(ingredientModels))
             }
@@ -148,6 +162,7 @@ class DatabaseBackgroundService : Service() {
                 database.ingredientDao().insertIngredient(ingredientEntity)
             }
             resultReceiver?.send(0, null)
+            notifyDatabaseChanged()
         }
     }
 
@@ -155,6 +170,8 @@ class DatabaseBackgroundService : Service() {
         CoroutineScope(Dispatchers.IO).launch {
             database.ingredientDao().deleteIngredientByName(name)
             resultReceiver?.send(0, null)
+            notifyDatabaseChanged()
+
         }
     }
 }

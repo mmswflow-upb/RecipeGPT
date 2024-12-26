@@ -31,7 +31,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     @SuppressLint("StaticFieldLeak")
     private var _recipeService: GenerateRecipeService? = null
     private val _isBound = MutableLiveData(false)
-    val isBound: LiveData<Boolean> get() = _isBound
 
     // LiveData for query text
     private val _query = MutableLiveData<String>()
@@ -50,10 +49,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     // LiveData for settings
     private val _numberOfRecipes = MutableLiveData(sharedPreferencesManager.getMaxResults())
-    val numberOfRecipes: LiveData<Int> get() = _numberOfRecipes
 
     private val _randomQuoteFrequency = MutableLiveData(sharedPreferencesManager.getRandomQuoteFrequency())
-    val randomQuoteFrequency: LiveData<String> get() = _randomQuoteFrequency
 
     // Service connection for RecipeService
     private val serviceConnection = object : ServiceConnection {
