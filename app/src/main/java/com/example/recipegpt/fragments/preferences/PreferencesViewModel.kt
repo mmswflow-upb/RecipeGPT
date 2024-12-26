@@ -1,4 +1,4 @@
-package com.example.recipegpt.fragments.settings
+package com.example.recipegpt.fragments.preferences
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.recipegpt.utils.SharedPreferencesManager
 
-class SettingsViewModel(application: Application) : AndroidViewModel(application) {
+class PreferencesViewModel(application: Application) : AndroidViewModel(application) {
 
     private val sharedPreferencesManager = SharedPreferencesManager(application)
 

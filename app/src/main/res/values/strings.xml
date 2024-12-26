@@ -8,16 +8,16 @@
     <string name="no_recipes">No Recipes</string>
     <string name="saved_recipes">Saved Recipes</string>
     <string name="shopping_list">Shopping List</string>
-    <string name="settings">Settings</string>
+    <string name="preferences">Preferences</string>
     <string name="search_icon">Search Icon</string>
     <string name="menu_home">Home</string>
     <string name="menu_saved_recipes">Recipes</string>
     <string name="menu_shopping_list">Shopping List</string>
-    <string name="menu_settings">Settings</string>
+    <string name="menu_preferences">Preferences</string>
     <string name="recipe_details">Details</string>
     <string name="max_results_label">Maximum Number of Results</string>
     <string name="max_results_hint">e.g. 100</string>
-    <string name="save_button_label">Save Settings</string>
+    <string name="save_preferences_button_label">Save Preferences</string>
     <string name="random_quote_fetching_frequency">Random Quote Fetching Frequency</string>
     <string name="random_quote_frequency_description">Set how often random quotes should be fetched.</string>
     <string name="max_results_description">Set the maximum number of recipes to display in generated results. The more results the slower the process.</string>
@@ -63,7 +63,7 @@
     <string name="no_ingredients">No Ingredients</string>
 
     <string name="ingredients_search_hint">Search Ingredients</string>
-    <string name="ingredient_popup_title">Set amount for %1$s</string>
+    <string name="ingredient_popup_title">Set added amount for %1$s</string>
     <string name="enter_amount">Enter amount</string>
     <string name="done">Done</string>
 
@@ -74,9 +74,9 @@
     <string name="cups">cups</string>
     <string name="liters">liters</string>
     <string name="milliliters">milliliters</string>
-    <string name="piece_about_50_grams">pieces (about 50 grams)</string>
-    <string name="piece_about_100_grams">pieces (about 100 grams)</string>
-    <string name="piece_about_250_grams">pieces (about 250 grams)</string>
+    <string name="piece_about_50_grams">pieces (about 50 grams each)</string>
+    <string name="piece_about_100_grams">pieces (about 100 grams each)</string>
+    <string name="piece_about_250_grams">pieces (about 250 grams each)</string>
     <string name="whole_pieces">pieces</string>
     <string name="teaspoons_solid">teaspoons (solid)</string>
     <string name="tablespoons_solid">tablespoons (solid)</string>
@@ -85,5 +85,9 @@
     <string name="generic_error_message">An error occurred while fetching recipes. Please try again later.</string>
     <string name="timeout_error_title">Timeout Error</string>
     <string name="generic_error_title">Error Fetching Recipes</string>
+    <string name="save_recipe">Save recipe</string>
+    <string name="list_ingredients">List ingredients of recipe</string>
+    <string name="saved_preferences">Saved Preferences!</string>
+    <string name="preferences_error_message">Please enter a valid maximum number of results.</string>
 
 </resources>

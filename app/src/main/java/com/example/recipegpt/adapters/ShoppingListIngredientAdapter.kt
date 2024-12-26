@@ -62,15 +62,31 @@ class ShoppingListIngredientAdapter(
     }
 
     // Converts unit to display-friendly format
+    //Normalize the strings for units
     private fun convertUnitDisplay(unit: String): String {
+
         return when (unit) {
-            QuantUnit.tablespoons_solids_plants_powders.unit -> context.getString(R.string.tablespoons)
-            QuantUnit.teaspoons_solids_plants_powders.unit -> context.getString(R.string.teaspoons)
-            QuantUnit.whole_pieces.unit -> context.getString(R.string.whole_pieces)
-            QuantUnit.piece_about_50_grams.unit -> context.getString(R.string.piece_about_50_grams)
-            QuantUnit.piece_about_100_grams.unit -> context.getString(R.string.piece_about_100_grams)
-            QuantUnit.piece_about_250_grams.unit -> context.getString(R.string.piece_about_250_grams)
-            else -> unit
+            QuantUnit.tablespoons_solids_plants_powders.unit -> {
+                context.getString(R.string.tablespoons)
+            }
+            QuantUnit.teaspoons_solids_plants_powders.unit -> {
+                context.getString(R.string.teaspoons)
+            }
+            QuantUnit.piece_about_50_grams.unit -> {
+                context.getString(R.string.piece_about_50_grams)
+            }
+            QuantUnit.piece_about_100_grams.unit -> {
+                context.getString(R.string.piece_about_100_grams)
+            }
+            QuantUnit.piece_about_250_grams.unit -> {
+                context.getString(R.string.piece_about_250_grams)
+            }
+            QuantUnit.whole_pieces.unit -> {
+                context.getString(R.string.whole_pieces)
+            }
+            else -> {
+                unit
+            }
         }
     }
 }

@@ -38,7 +38,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="10"
-            app:boxBackgroundMode="filled"
+            app:boxBackgroundMode="none"
             app:boxBackgroundColor="@android:color/transparent"
             app:boxStrokeColor="@android:color/transparent">
 
@@ -87,7 +87,6 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_margin="16dp"
-        android:visibility="invisible"
         app:cardBackgroundColor="?attr/background"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp">
@@ -114,14 +113,15 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxBackgroundMode="filled">
+                app:boxBackgroundMode="none">
 
                 <EditText
                     android:textColor="?attr/colorOnPrimary"
                     android:id="@+id/ingredientAmountInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:autofillHints="a"
+                    android:autofillHints=""
+
                     android:hint="@string/enter_amount"
                     android:background="@android:color/transparent"
                     android:inputType="numberDecimal" />

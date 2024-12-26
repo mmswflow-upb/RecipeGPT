@@ -14,7 +14,8 @@ data class Recipe(
     val ingredients: List<Ingredient>,
     val instructions: List<String>,
     val estimatedCookingTime: Int,
-    val servings: Int
+    val servings: Int,
+    var cooking: Boolean = false
 ) : Parcelable
 
 @Parcelize

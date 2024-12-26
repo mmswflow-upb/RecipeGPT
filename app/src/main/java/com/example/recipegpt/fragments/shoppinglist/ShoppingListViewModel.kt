@@ -28,7 +28,7 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
     private val _popupIngredient = MutableLiveData<Ingredient?>()
     val popupIngredient: LiveData<Ingredient?> get() = _popupIngredient
 
-    fun fetchShoppingList() {
+    private fun fetchShoppingList() {
         CoroutineScope(Dispatchers.IO).launch {
             // Step 1: Fetch saved recipes from the database
             val recipeResultReceiver = object : ResultReceiver(null) {
@@ -117,6 +117,9 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
+    init{
+        fetchShoppingList()
+    }
 
     fun addToDatabase(ingredient: Ingredient) {
         CoroutineScope(Dispatchers.IO).launch {

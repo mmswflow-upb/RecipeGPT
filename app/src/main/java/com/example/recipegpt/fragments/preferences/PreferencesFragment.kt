@@ -1,4 +1,4 @@
-package com.example.recipegpt.fragments.settings
+package com.example.recipegpt.fragments.preferences
 
 import android.content.Context
 import android.os.Bundle
@@ -11,12 +11,12 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.recipegpt.R
-import com.example.recipegpt.databinding.FragmentSettingsBinding
+import com.example.recipegpt.databinding.FragmentPreferencesBinding
 
-class SettingsFragment : Fragment(R.layout.fragment_settings) {
+class PreferencesFragment : Fragment(R.layout.fragment_preferences) {
 
-    private val settingsViewModel: SettingsViewModel by activityViewModels()
-    private var _binding: FragmentSettingsBinding? = null
+    private val settingsViewModel: PreferencesViewModel by activityViewModels()
+    private var _binding: FragmentPreferencesBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -24,7 +24,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
+        _binding = FragmentPreferencesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -67,9 +67,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 settingsViewModel.updateRandomQuoteFrequency(selectedFrequency)
 
                 // Notify the user
-                Toast.makeText(requireContext(), "Settings saved!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.saved_preferences), Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(requireContext(), "Please enter a valid maximum number of results.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.preferences_error_message), Toast.LENGTH_SHORT).show()
             }
         }
     }

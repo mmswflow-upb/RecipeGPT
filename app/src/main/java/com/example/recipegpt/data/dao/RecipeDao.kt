@@ -16,6 +16,9 @@ interface RecipeDao {
     @Query("SELECT * FROM recipes WHERE title = :name")
     suspend fun getRecipeByNameSync(name: String): RecipeEntity?
 
+    @Query("SELECT * FROM recipes WHERE cooking= :cooking")
+    suspend fun getRecipesBy(cooking: Boolean): List<RecipeEntity>?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecipe(recipe: RecipeEntity)
 

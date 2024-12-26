@@ -138,35 +138,52 @@
             style="?android:attr/buttonBarStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+
             android:orientation="horizontal"
             android:layout_marginBottom="16dp">
 
-            <Button
+            <ImageButton
                 android:id="@+id/saveButton"
+                android:layout_width="48dp"
                 android:layout_marginEnd="16dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/save_button"
-                android:textColor="?attr/colorPrimary"
-                android:background="@drawable/rounded_rectangle_border" />
-
-            <Button
+                android:layout_height="48dp"
+                android:src="@drawable/ic_recipe_not_saved"
+                android:contentDescription="@string/save_recipe"
                 android:background="@drawable/rounded_rectangle_border"
-                android:id="@+id/cookButton"
-                android:textColor="?attr/colorPrimary"
+                app:tint="?attr/colorPrimary" />
+
+
+            <ImageButton
+                android:id="@+id/listIngredients"
+                android:layout_width="48dp"
                 android:layout_marginEnd="16dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/cook_button" />
+                android:layout_height="48dp"
+                android:padding="6dp"
+                android:src="@drawable/ic_shopping_list"
+                android:scaleType="fitCenter"
+                android:contentDescription="@string/list_ingredients"
+                android:background="@drawable/rounded_rectangle_border"
+                app:tint="?attr/colorPrimary" />
+
+            <ImageButton
+                android:id="@+id/cookButton"
+                android:layout_width="48dp"
+                android:layout_marginEnd="16dp"
+                android:layout_height="48dp"
+                android:padding="6dp"
+                android:src="@drawable/ic_cooked_recipe"
+                android:scaleType="fitCenter"
+                android:contentDescription="@string/cook_button"
+                android:background="@drawable/rounded_rectangle_border"
+                app:tint="?attr/colorPrimary" />
 
             <ImageButton
                 android:id="@+id/shareButton"
                 android:layout_width="48dp"
-                android:layout_height="match_parent"
+                android:layout_height="48dp"
                 android:src="@drawable/ic_share"
                 android:contentDescription="@string/share_button_description"
                 android:background="@drawable/rounded_rectangle_border"
-
                 app:tint="?attr/colorPrimary" />
         </LinearLayout>
 

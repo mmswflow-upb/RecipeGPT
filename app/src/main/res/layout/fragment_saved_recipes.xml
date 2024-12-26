@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="10"
 
-            app:boxBackgroundMode="filled"
+            app:boxBackgroundMode="none"
             app:boxBackgroundColor="@android:color/transparent"
             app:boxStrokeColor="@android:color/transparent"
             >

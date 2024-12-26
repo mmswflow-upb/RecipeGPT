@@ -39,7 +39,6 @@ class ShoppingListFragment : Fragment() {
         setupObservers()
         setupPopup()
 
-        viewModel.fetchShoppingList()
     }
 
     private fun setupRecyclerView() {

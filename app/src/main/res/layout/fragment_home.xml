@@ -31,8 +31,10 @@
         android:layout_marginVertical="24dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
+        android:paddingVertical="6dp"
         android:background="@drawable/rounded_rectangle_border"
-        android:paddingVertical="6dp">
+
+        >
 
 
 
@@ -41,14 +43,15 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="10"
-            app:boxBackgroundMode="filled"
+            app:boxBackgroundMode="none"
             app:boxBackgroundColor="@android:color/transparent"
             app:boxStrokeColor="@android:color/transparent">
 
             <EditText
                 android:id="@+id/generateRecipesEditText"
+
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:hint="@string/search_hint"
                 android:inputType="text"
                 android:textSize="18sp"

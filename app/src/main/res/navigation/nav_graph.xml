@@ -29,8 +29,8 @@
         tools:layout="@layout/fragment_saved_ingredients" />
 
     <fragment
-        android:id="@+id/menu_settings"
-        android:name="com.example.recipegpt.fragments.settings.SettingsFragment"
-        android:label="@string/menu_settings"
-        tools:layout="@layout/fragment_settings" />
+        android:id="@+id/menu_preferences"
+        android:name="com.example.recipegpt.fragments.preferences.PreferencesFragment"
+        android:label="@string/menu_preferences"
+        tools:layout="@layout/fragment_preferences" />
 </navigation>

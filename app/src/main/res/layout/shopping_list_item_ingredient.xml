@@ -43,11 +43,12 @@
         <ImageButton
             android:id="@+id/cartButton"
             android:layout_width="48dp"
+            android:scaleType="fitCenter"
             android:layout_height="48dp"
             android:layout_alignParentEnd="true"
             android:contentDescription="@string/purchased_ingredient"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_saved_ingredients"
+            android:src="@drawable/ic_shopping_basket"
             android:background="?attr/selectableItemBackgroundBorderless"
             app:tint="?attr/colorPrimary" />
     </RelativeLayout>

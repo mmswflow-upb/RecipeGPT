@@ -1,7 +1,6 @@
 package com.example.recipegpt.activities.recipedetails
 
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
@@ -74,6 +73,10 @@ class RecipeDetailsActivity : AppCompatActivity() {
             viewModel.toggleRecipeSavedStatus()
         }
 
+        binding.listIngredients.setOnClickListener{
+
+        }
+
         binding.cookButton.setOnClickListener {
             // Cook functionality (to be implemented)
         }
@@ -120,35 +123,27 @@ class RecipeDetailsActivity : AppCompatActivity() {
 
     //Normalize the strings for units
     private fun convertUnitDisplay(unit: String): String {
-        Log.d("RecipeDetailsActivity", "Input unit: $unit")
 
         return when (unit) {
             QuantUnit.tablespoons_solids_plants_powders.unit -> {
-                Log.d("RecipeDetailsActivity", "Unit matches: tablespoons_solids_plants_powders")
                 getString(R.string.tablespoons)
             }
             QuantUnit.teaspoons_solids_plants_powders.unit -> {
-                Log.d("RecipeDetailsActivity", "Unit matches: teaspoons_solids_plants_powders")
                 getString(R.string.teaspoons)
             }
             QuantUnit.piece_about_50_grams.unit -> {
-                Log.d("RecipeDetailsActivity", "Unit matches: piece_about_50_grams")
                 getString(R.string.piece_about_50_grams)
             }
             QuantUnit.piece_about_100_grams.unit -> {
-                Log.d("RecipeDetailsActivity", "Unit matches: piece_about_100_grams")
                 getString(R.string.piece_about_100_grams)
             }
             QuantUnit.piece_about_250_grams.unit -> {
-                Log.d("RecipeDetailsActivity", "Unit matches: piece_about_250_grams")
                 getString(R.string.piece_about_250_grams)
             }
             QuantUnit.whole_pieces.unit -> {
-                Log.d("RecipeDetailsActivity", "Unit matches: whole_pieces")
                 getString(R.string.whole_pieces)
             }
             else -> {
-                Log.d("RecipeDetailsActivity", "Unit does not match any predefined units. Using input unit: $unit")
                 unit
             }
         }
@@ -191,16 +186,12 @@ class RecipeDetailsActivity : AppCompatActivity() {
     private fun updateSaveButton(isSaved: Boolean) {
         Log.d("RecipeDetailsViewModel-updateSaveButton", "Is recipe saved: $isSaved")
         if (isSaved) {
-            binding.saveButton.text = getString(R.string.unsave_button_text)
-            binding.saveButton.setTextColor(resources.getColor(R.color.redLight, null))
-            binding.saveButton.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.redLight, null))
+            binding.saveButton.setImageResource(R.drawable.ic_recipe_saved)
 
 
         } else {
-            binding.saveButton.text = getString(R.string.save_button_text)
-            binding.saveButton.setTextColor(resources.getColor(R.color.greenPrimary, null))
-            binding.saveButton.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.greenPrimary, null))
 
+            binding.saveButton.setImageResource(R.drawable.ic_recipe_not_saved)
 
         }
     }
