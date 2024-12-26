@@ -1,5 +1,5 @@
 # RecipeGPT 🥩🥗🧁
-An Android app used for generating recipes by sending queries to OpenAI's GPT-4o model to process them and return deilicious recipes 🤤🍰
+An Android app used for generating recipes by sending queries to OpenAI's GPT-4o model to process them and return recipes 🤤🍰
 
 
 ## Usage
