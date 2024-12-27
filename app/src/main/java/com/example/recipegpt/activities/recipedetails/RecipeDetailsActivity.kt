@@ -2,7 +2,6 @@ package com.example.recipegpt.activities.recipedetails
 
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.content.res.Resources.Theme
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -10,12 +9,10 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.ThemeUtils
 import com.example.recipegpt.R
 import com.example.recipegpt.databinding.ActivityRecipeDetailsBinding
 import com.example.recipegpt.models.QuantUnit
 import com.example.recipegpt.models.Recipe
-import kotlinx.coroutines.CoroutineScope
 
 class RecipeDetailsActivity : AppCompatActivity() {
 
@@ -82,7 +79,7 @@ class RecipeDetailsActivity : AppCompatActivity() {
         }
 
         viewModel.canBeCooked.observe(this) { canBeCooked ->
-            Log.d("RecipeDetailsActivity", "Can be cooked's value changed: ${canBeCooked}")
+            Log.d("RecipeDetailsActivity", "Can be cooked value changed: $canBeCooked")
             updateCookButton(canBeCooked)
         }
 
@@ -119,9 +116,16 @@ class RecipeDetailsActivity : AppCompatActivity() {
     }
     private fun getThemePrimaryColor(): Int {
         val typedValue = TypedValue()
-        val theme = theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
-        return typedValue.data
+        val theme = theme // Fetch the current theme
+        val isResolved = theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
+
+        return if (isResolved) {
+            typedValue.data // Return the color value if resolved
+        } else {
+            resources.getColor(android.R.color.black, null) // Fallback to black if not resolved
+        }
     }
+
 
     private fun updateCookButton(canBeCooked: Boolean) {
         val primaryColor = getThemePrimaryColor()
