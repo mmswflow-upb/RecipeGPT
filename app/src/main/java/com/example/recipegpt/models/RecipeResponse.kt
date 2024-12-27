@@ -1,6 +1,8 @@
 package com.example.recipegpt.models
 
+import android.content.Context
 import android.os.Parcelable
+import com.example.recipegpt.R
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
@@ -48,6 +50,34 @@ enum class QuantUnit(val unit: String) {
 
 object UnitConverter {
 
+    fun getDisplayName(context: Context, unit: QuantUnit): String {
+        return when (unit) {
+            QuantUnit.grams -> context.getString(R.string.grams)
+            QuantUnit.milligrams -> context.getString(R.string.milligrams)
+            QuantUnit.kilograms -> context.getString(R.string.kilograms)
+            QuantUnit.liters -> context.getString(R.string.liters)
+            QuantUnit.milliliters -> context.getString(R.string.milliliters)
+            QuantUnit.cups -> context.getString(R.string.cups)
+            QuantUnit.tablespoons -> context.getString(R.string.tablespoons)
+            QuantUnit.teaspoons -> context.getString(R.string.teaspoons)
+            QuantUnit.tablespoons_solids_plants_powders -> context.getString(R.string.tablespoons_solid)
+            QuantUnit.teaspoons_solids_plants_powders -> context.getString(R.string.teaspoons_solid)
+            QuantUnit.whole_pieces -> context.getString(R.string.whole_pieces)
+            QuantUnit.piece_about_50_grams -> context.getString(R.string.piece_about_50_grams)
+            QuantUnit.piece_about_100_grams -> context.getString(R.string.piece_about_100_grams)
+            QuantUnit.piece_about_250_grams -> context.getString(R.string.piece_about_250_grams)
+            QuantUnit.drops -> context.getString(R.string.drops)
+        }
+    }
+
+    fun fromDisplayName(context: Context, displayName: String): QuantUnit {
+        return QuantUnit.entries.find {
+            getDisplayName(context, it) == displayName
+        } ?: throw IllegalArgumentException("No QuantUnit matches the display name: $displayName")
+    }
+
+
+
     private val conversionRates = mapOf(
         // Mass conversions
         Pair(QuantUnit.milligrams, QuantUnit.grams) to 0.001,
@@ -88,6 +118,8 @@ object UnitConverter {
         Pair(QuantUnit.grams, QuantUnit.piece_about_100_grams) to 1.0 / 100.0,
         Pair(QuantUnit.grams, QuantUnit.piece_about_250_grams) to 1.0 / 250.0
     )
+
+
 
     fun convert(value: Double, from: QuantUnit, to: QuantUnit): Double {
         return if (from == to) {
@@ -154,11 +186,3 @@ object UnitConverter {
         }
     }
 }
-
-
-
-
-
-
-
-

@@ -9,10 +9,15 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.viewModelScope
 import com.example.recipegpt.R
 import com.example.recipegpt.databinding.ActivityRecipeDetailsBinding
 import com.example.recipegpt.models.QuantUnit
 import com.example.recipegpt.models.Recipe
+import com.example.recipegpt.models.UnitConverter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class RecipeDetailsActivity : AppCompatActivity() {
 
@@ -54,7 +59,8 @@ class RecipeDetailsActivity : AppCompatActivity() {
                 val ingredientBinding = com.example.recipegpt.databinding.ItemIngredientBinding.bind(ingredientView)
 
                 // Convert the unit display
-                val displayUnit = convertUnitDisplay(ingredient.unit)
+                val displayUnit = UnitConverter.getDisplayName(applicationContext, QuantUnit.entries.first { entry -> entry.unit == ingredient.unit  })
+
 
 
                 ingredientBinding.ingredientName.text = ingredient.item
@@ -164,7 +170,8 @@ class RecipeDetailsActivity : AppCompatActivity() {
             val ingredientBinding = com.example.recipegpt.databinding.ItemIngredientBinding.bind(ingredientView)
 
             // Convert the unit display
-            val displayUnit = convertUnitDisplay(ingredient.unit)
+            val displayUnit = UnitConverter.getDisplayName(applicationContext, QuantUnit.entries.first { entry -> entry.unit == ingredient.unit  })
+
 
             ingredientBinding.ingredientName.text = ingredient.item
             ingredientBinding.ingredientAmount.text = getString(
@@ -186,33 +193,7 @@ class RecipeDetailsActivity : AppCompatActivity() {
         }
     }
 
-    //Normalize the strings for units
-    private fun convertUnitDisplay(unit: String): String {
 
-        return when (unit) {
-            QuantUnit.tablespoons_solids_plants_powders.unit -> {
-                getString(R.string.tablespoons)
-            }
-            QuantUnit.teaspoons_solids_plants_powders.unit -> {
-                getString(R.string.teaspoons)
-            }
-            QuantUnit.piece_about_50_grams.unit -> {
-                getString(R.string.piece_about_50_grams)
-            }
-            QuantUnit.piece_about_100_grams.unit -> {
-                getString(R.string.piece_about_100_grams)
-            }
-            QuantUnit.piece_about_250_grams.unit -> {
-                getString(R.string.piece_about_250_grams)
-            }
-            QuantUnit.whole_pieces.unit -> {
-                getString(R.string.whole_pieces)
-            }
-            else -> {
-                unit
-            }
-        }
-    }
 
     private fun toggleButtonsVisibility(isSaved: Boolean) {
         if(isSaved){
@@ -239,7 +220,7 @@ class RecipeDetailsActivity : AppCompatActivity() {
     //Building the text containing recipe details to share it through other apps
     private fun buildRecipeDetailsText(recipe: Recipe): String {
         val ingredients = recipe.ingredients.joinToString("\n") {
-            val displayUnit = convertUnitDisplay(it.unit)
+            val displayUnit = UnitConverter.getDisplayName(applicationContext, QuantUnit.entries.first { entry -> entry.unit == it.unit  })
             "- ${it.amount} $displayUnit of ${it.item}"
         }
         val instructions = recipe.instructions.joinToString("\n") { step ->

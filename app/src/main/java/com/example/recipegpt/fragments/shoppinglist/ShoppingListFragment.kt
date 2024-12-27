@@ -15,6 +15,7 @@ import com.example.recipegpt.adapters.ShoppingListIngredientAdapter
 import com.example.recipegpt.databinding.FragmentShoppingListBinding
 import com.example.recipegpt.models.Ingredient
 import com.example.recipegpt.models.QuantUnit
+import com.example.recipegpt.models.UnitConverter
 
 class ShoppingListFragment : Fragment() {
 
@@ -23,6 +24,8 @@ class ShoppingListFragment : Fragment() {
 
     private val viewModel: ShoppingListViewModel by viewModels()
     private lateinit var ingredientAdapter: ShoppingListIngredientAdapter
+
+    private lateinit var unitDisplayArray: Array<String> // Array for display units from resources
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,6 +37,8 @@ class ShoppingListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        unitDisplayArray = resources.getStringArray(R.array.quantity_units) // Load display names for units
 
         setupRecyclerView()
         setupSearchBar()
@@ -58,7 +63,6 @@ class ShoppingListFragment : Fragment() {
     }
 
     private fun setupObservers() {
-
         viewModel.filteredShoppingList.observe(viewLifecycleOwner) { ingredients ->
             Log.d("shopping list observer", "shopping list changed")
             ingredientAdapter.submitList(ingredients)
@@ -73,13 +77,13 @@ class ShoppingListFragment : Fragment() {
                 hidePopup()
             }
         }
+
         viewModel.popupSelectedUnit.observe(viewLifecycleOwner) { selectedUnit ->
             val unitIndex = QuantUnit.entries.indexOf(selectedUnit)
             if (unitIndex != -1) {
                 binding.ingredientUnitSpinner.setSelection(unitIndex)
             }
         }
-
 
         viewModel.query.observe(viewLifecycleOwner) { query ->
             Log.d("query observer", "Query changed!")
@@ -88,9 +92,6 @@ class ShoppingListFragment : Fragment() {
                 binding.searchShoppingList.setText(query)
             }
         }
-
-
-
     }
 
     private fun setupSearchBar() {
@@ -113,17 +114,16 @@ class ShoppingListFragment : Fragment() {
         binding.searchShoppingList.setText(viewModel.query.value)
     }
 
-
-
     private fun setupPopup() {
-        val units = QuantUnit.entries.map { it.unit }
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, units)
+        val displayNames = QuantUnit.entries.map { UnitConverter.getDisplayName(requireContext(), it) }
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, displayNames)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.ingredientUnitSpinner.adapter = adapter
 
         binding.ingredientUnitSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedUnit = QuantUnit.entries[position]
+                val selectedDisplayName = displayNames[position]
+                val selectedUnit = UnitConverter.fromDisplayName(requireContext(), selectedDisplayName)
                 viewModel.updatePopupSelectedUnit(selectedUnit)
             }
 
@@ -145,15 +145,25 @@ class ShoppingListFragment : Fragment() {
         }
     }
 
+
+
+
     private fun showPopup(ingredient: Ingredient) {
         binding.ingredientPopupCard.visibility = View.VISIBLE
         binding.overlayBackground.visibility = View.VISIBLE
         binding.popupTitle.text = getString(R.string.ingredient_popup_title, ingredient.item)
         binding.ingredientAmountInput.setText(ingredient.amount.toString())
 
-        val unitIndex = QuantUnit.entries.indexOfFirst { it.unit == ingredient.unit }
+        val displayName = UnitConverter.getDisplayName( requireContext() ,
+            QuantUnit.entries.first { it.unit == ingredient.unit }
+        )
+        val unitIndex = QuantUnit.entries.indexOfFirst {
+            UnitConverter.getDisplayName(requireContext(), it) == displayName
+        }
         binding.ingredientUnitSpinner.setSelection(if (unitIndex != -1) unitIndex else 0)
     }
+
+
 
     private fun hidePopup() {
         binding.ingredientPopupCard.visibility = View.GONE
@@ -165,34 +175,5 @@ class ShoppingListFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    // Converts unit to display-friendly format
-    //Normalize the strings for units
-    private fun convertUnitDisplay(unit: String): String {
-
-        return when (unit) {
-            QuantUnit.tablespoons_solids_plants_powders.unit -> {
-                getString(R.string.tablespoons)
-            }
-            QuantUnit.teaspoons_solids_plants_powders.unit -> {
-                getString(R.string.teaspoons)
-            }
-            QuantUnit.piece_about_50_grams.unit -> {
-                getString(R.string.piece_about_50_grams)
-            }
-            QuantUnit.piece_about_100_grams.unit -> {
-                getString(R.string.piece_about_100_grams)
-            }
-            QuantUnit.piece_about_250_grams.unit -> {
-                getString(R.string.piece_about_250_grams)
-            }
-            QuantUnit.whole_pieces.unit -> {
-                getString(R.string.whole_pieces)
-            }
-            else -> {
-                unit
-            }
-        }
     }
 }

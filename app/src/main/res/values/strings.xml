@@ -92,5 +92,7 @@
     <string name="not_enough_ingredients">Not enough ingredients!</string>
     <string name="recipe_cooked_successfully">Recipe cooked successfully!</string>
     <string name="recipes_generation_in_process">Wait for the current prompt to be processed!</string>
+    <string name="milligrams">milligrams</string>
+    <string name="drops">drops</string>
 
 </resources>

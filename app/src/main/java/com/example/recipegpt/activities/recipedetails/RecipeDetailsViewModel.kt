@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.recipegpt.models.Ingredient
 import com.example.recipegpt.models.QuantUnit
 import com.example.recipegpt.models.Recipe
@@ -140,7 +141,9 @@ class RecipeDetailsViewModel(application: Application) : AndroidViewModel(applic
         val resultReceiver = object : android.os.ResultReceiver(null) {
             override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                 val success = resultData?.getBoolean("success", false) ?: false
-                callback(success)
+                viewModelScope.launch(Dispatchers.Main){
+                    callback(success)
+                }
             }
         }
 
