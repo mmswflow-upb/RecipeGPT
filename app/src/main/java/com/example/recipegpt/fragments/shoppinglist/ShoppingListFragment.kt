@@ -83,8 +83,12 @@ class ShoppingListFragment : Fragment() {
 
         viewModel.query.observe(viewLifecycleOwner) { query ->
             Log.d("query observer", "Query changed!")
-            binding.searchShoppingList.setText(query) // Ensure the search bar reflects the current query
+            // Only set the text if it differs from what's currently there
+            if (binding.searchShoppingList.text.toString() != query) {
+                binding.searchShoppingList.setText(query)
+            }
         }
+
 
 
     }
@@ -161,5 +165,34 @@ class ShoppingListFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    // Converts unit to display-friendly format
+    //Normalize the strings for units
+    private fun convertUnitDisplay(unit: String): String {
+
+        return when (unit) {
+            QuantUnit.tablespoons_solids_plants_powders.unit -> {
+                getString(R.string.tablespoons)
+            }
+            QuantUnit.teaspoons_solids_plants_powders.unit -> {
+                getString(R.string.teaspoons)
+            }
+            QuantUnit.piece_about_50_grams.unit -> {
+                getString(R.string.piece_about_50_grams)
+            }
+            QuantUnit.piece_about_100_grams.unit -> {
+                getString(R.string.piece_about_100_grams)
+            }
+            QuantUnit.piece_about_250_grams.unit -> {
+                getString(R.string.piece_about_250_grams)
+            }
+            QuantUnit.whole_pieces.unit -> {
+                getString(R.string.whole_pieces)
+            }
+            else -> {
+                unit
+            }
+        }
     }
 }
