@@ -9,7 +9,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.recipegpt.models.Ingredient
+import com.example.recipegpt.models.QuantUnit
 import com.example.recipegpt.models.Recipe
+import com.example.recipegpt.models.UnitConverter
 import com.example.recipegpt.services.DatabaseBackgroundService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +34,9 @@ class RecipeDetailsViewModel(application: Application) : AndroidViewModel(applic
     private val _ingredientAvailability = MutableLiveData<Map<String, Boolean>>()
     val ingredientAvailability: LiveData<Map<String, Boolean>> get() = _ingredientAvailability
 
+    private val _canBeCooked = MutableLiveData(false)
+    val canBeCooked: LiveData<Boolean> get() = _canBeCooked
+
     // Function to set the current recipe and fetch its saved status and ingredient availability
     fun setRecipe(newRecipe: Recipe) {
         _recipe.value = newRecipe
@@ -46,6 +51,7 @@ class RecipeDetailsViewModel(application: Application) : AndroidViewModel(applic
                 val recipe = resultData?.getParcelable("data", Recipe::class.java)
 
                 _isRecipeSaved.postValue(recipe != null)
+                checkCanCookRecipe()
             }
         }
 
@@ -78,7 +84,30 @@ class RecipeDetailsViewModel(application: Application) : AndroidViewModel(applic
         _recipe.postValue(updatedRecipe)
     }
 
+    private fun checkCanCookRecipe() {
+        val currentRecipe = _recipe.value ?: return
+
+        val resultReceiver = object : android.os.ResultReceiver(null) {
+            override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+                val canCook = resultData?.getBoolean("canCook", false) ?: false
+                _canBeCooked.postValue(canCook)
+                Log.d("RecipeDetialsViewModel", "can this recipe be cooked: ${canBeCooked.value}")
+
+            }
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val intent = Intent(context, DatabaseBackgroundService::class.java).apply {
+                action = "CAN_COOK_RECIPE"
+                putExtra("recipe", currentRecipe)
+                putExtra("resultReceiver", resultReceiver)
+            }
+            context.startService(intent)
+        }
+    }
+
     fun cookRecipe(callback: (Boolean) -> Unit) {
+        Log.d("RecipeDetailsViewModel", "Trying to cook")
         val currentRecipe = _recipe.value ?: return
 
         val resultReceiver = object : android.os.ResultReceiver(null) {
@@ -99,6 +128,32 @@ class RecipeDetailsViewModel(application: Application) : AndroidViewModel(applic
     }
 
 
+    private fun checkIngredientAvailability(requiredIngredients: List<Ingredient>) {
+        val resultReceiver = object : android.os.ResultReceiver(null) {
+            override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+                val savedIngredients =
+                    resultData?.getParcelableArrayList("data", Ingredient::class.java) ?: emptyList<Ingredient>()
+                val allIngredientsAvailable = requiredIngredients.all { requiredIngredient ->
+                    val savedIngredient = savedIngredients.find { it.item.equals(requiredIngredient.item, ignoreCase = true) }
+                    savedIngredient != null && UnitConverter.convert(
+                        requiredIngredient.amount.toDouble(),
+                        QuantUnit.valueOf(requiredIngredient.unit),
+                        QuantUnit.valueOf(savedIngredient.unit)
+                    ) <= savedIngredient.amount.toDouble()
+                }
+                _canBeCooked.postValue(allIngredientsAvailable)
+            }
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val intent = Intent(context, DatabaseBackgroundService::class.java).apply {
+                action = "GET_SAVED_INGREDIENTS"
+                putExtra("resultReceiver", resultReceiver)
+            }
+            context.startService(intent)
+        }
+    }
+
     // Save or delete the recipe
     fun toggleRecipeSavedStatus() {
         val currentRecipe = _recipe.value ?: return
@@ -116,29 +171,29 @@ class RecipeDetailsViewModel(application: Application) : AndroidViewModel(applic
     }
 
 
-    // Check ingredient availability against saved ingredients
-    private fun checkIngredientAvailability(requiredIngredients: List<Ingredient>) {
-        val resultReceiver = object : android.os.ResultReceiver(null) {
-            override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-                val savedIngredients =
-                    resultData?.getParcelableArrayList("data", Ingredient::class.java) ?: emptyList<Ingredient>()
-                val availability = requiredIngredients.associate { requiredIngredient ->
-                    val savedIngredient = savedIngredients.find { it.item.equals(requiredIngredient.item, ignoreCase = true) }
-                    val isAvailable =
-                        savedIngredient != null && savedIngredient.amount.toDouble() >= requiredIngredient.amount.toDouble()
-                    Log.d("checkIngredientAvailability", "${requiredIngredient.item} available: $isAvailable")
-                    requiredIngredient.item to isAvailable
-                }
-                _ingredientAvailability.postValue(availability)
-            }
-        }
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val intent = Intent(context, DatabaseBackgroundService::class.java).apply {
-                action = "GET_SAVED_INGREDIENTS"
-                putExtra("resultReceiver", resultReceiver)
-            }
-            context.startService(intent)
-        }
-    }
+//    // Check ingredient availability against saved ingredients
+//    private fun checkIngredientAvailability(requiredIngredients: List<Ingredient>) {
+//        val resultReceiver = object : android.os.ResultReceiver(null) {
+//            override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+//                val savedIngredients =
+//                    resultData?.getParcelableArrayList("data", Ingredient::class.java) ?: emptyList<Ingredient>()
+//                val availability = requiredIngredients.associate { requiredIngredient ->
+//                    val savedIngredient = savedIngredients.find { it.item.equals(requiredIngredient.item, ignoreCase = true) }
+//                    val isAvailable =
+//                        savedIngredient != null && savedIngredient.amount.toDouble() >= requiredIngredient.amount.toDouble()
+//                    Log.d("checkIngredientAvailability", "${requiredIngredient.item} available: $isAvailable")
+//                    requiredIngredient.item to isAvailable
+//                }
+//                _ingredientAvailability.postValue(availability)
+//            }
+//        }
+//
+//        CoroutineScope(Dispatchers.IO).launch {
+//            val intent = Intent(context, DatabaseBackgroundService::class.java).apply {
+//                action = "GET_SAVED_INGREDIENTS"
+//                putExtra("resultReceiver", resultReceiver)
+//            }
+//            context.startService(intent)
+//        }
+//    }
 }

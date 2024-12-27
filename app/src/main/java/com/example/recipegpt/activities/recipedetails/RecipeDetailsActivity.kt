@@ -2,12 +2,15 @@ package com.example.recipegpt.activities.recipedetails
 
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.content.res.Resources.Theme
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.ThemeUtils
 import com.example.recipegpt.R
 import com.example.recipegpt.databinding.ActivityRecipeDetailsBinding
 import com.example.recipegpt.models.QuantUnit
@@ -42,7 +45,7 @@ class RecipeDetailsActivity : AppCompatActivity() {
         // Observe the saved status to update the save button and toggle `listIngredients`
         viewModel.isRecipeSaved.observe(this) { isSaved ->
             updateSaveButton(isSaved)
-            toggleListIngredientsVisibility(isSaved)
+            toggleButtonsVisibility(isSaved)
         }
 
         //Update the colors of the ingredient amounts in case there's a change in the saved ingredients DB
@@ -72,6 +75,10 @@ class RecipeDetailsActivity : AppCompatActivity() {
             }
         }
 
+        viewModel.canBeCooked.observe(this) { canBeCooked ->
+            Log.d("RecipeDetailsActivity", "Can be cooked's value changed: ${canBeCooked}")
+            updateCookButton(canBeCooked)
+        }
 
 
         // Save button handler
@@ -86,25 +93,45 @@ class RecipeDetailsActivity : AppCompatActivity() {
             viewModel.toggleRecipeListedStatus()
         }
 
+        viewModel.canBeCooked.observe(this) { canBeCooked ->
+            updateCookButton(canBeCooked)
+        }
+
         binding.cookButton.setOnClickListener {
-            var message = ""
             viewModel.cookRecipe { success ->
-                 message = if (success) {
+                val message = if (success) {
                     getString(R.string.recipe_cooked_successfully)
                 } else {
                     getString(R.string.not_enough_ingredients)
                 }
-
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
             }
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-
         }
+
 
 
         binding.shareButton.setOnClickListener {
             shareRecipeDetails()
         }
     }
+    private fun getThemePrimaryColor(): Int {
+        val typedValue = TypedValue()
+        val theme = theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
+        return typedValue.data
+    }
+
+    private fun updateCookButton(canBeCooked: Boolean) {
+        val primaryColor = getThemePrimaryColor()
+        val disabledColor = resources.getColor(R.color.grayDark, null)
+
+        val color = if (canBeCooked) primaryColor else disabledColor
+
+        binding.cookButton.backgroundTintList = ColorStateList.valueOf(color)
+        binding.cookButton.imageTintList = ColorStateList.valueOf(color)
+        binding.cookButton.isEnabled = canBeCooked
+    }
+
+
 
     private fun updateListIngredientsButton(isListed: Boolean) {
 
@@ -180,11 +207,14 @@ class RecipeDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun toggleListIngredientsVisibility(isSaved: Boolean) {
-        binding.listIngredients.visibility = if (isSaved) {
-            View.VISIBLE
-        } else {
-            View.GONE
+    private fun toggleButtonsVisibility(isSaved: Boolean) {
+        if(isSaved){
+            binding.cookButton.visibility = View.VISIBLE
+            binding.listIngredients.visibility = View.VISIBLE
+
+        }else{
+            binding.cookButton.visibility = View.GONE
+            binding.listIngredients.visibility = View.GONE
         }
     }
 

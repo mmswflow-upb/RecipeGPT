@@ -74,6 +74,10 @@ class DatabaseBackgroundService : Service() {
                 val unit = intent.getStringExtra("unit")
                 if (name != null && unit != null) deleteIngredientByNameAndUnit(name, unit,  resultReceiver)
             }
+            "CAN_COOK_RECIPE" -> {
+                val recipe = intent.getParcelableExtra("recipe", Recipe::class.java)
+                if (recipe != null) canCookRecipe(recipe, resultReceiver)
+            }
             "COOK_RECIPE" -> {
                 val recipe = intent.getParcelableExtra("recipe", Recipe::class.java)
                 if (recipe != null) cookRecipe(recipe, resultReceiver)
@@ -153,29 +157,73 @@ class DatabaseBackgroundService : Service() {
     }
 
 
+    private fun canCookRecipe(recipe: Recipe, resultReceiver: ResultReceiver?) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val savedIngredients = database.ingredientDao().getAllIngredientsSync()
+
+            val insufficientIngredients = recipe.ingredients.filter { required ->
+                val saved = savedIngredients.find {
+                    it.item.equals(required.item, ignoreCase = true)
+                }
+                if (saved != null) {
+                    try {
+                        val requiredAmountInSavedUnit = UnitConverter.convert(
+                            required.amount.toDouble(),
+                            QuantUnit.valueOf(required.unit),
+                            QuantUnit.valueOf(saved.unit)
+                        )
+                        requiredAmountInSavedUnit > saved.amount
+                    } catch (e: IllegalArgumentException) {
+                        true // Treat as insufficient if conversion fails
+                    }
+                } else {
+                    true // Ingredient not found
+                }
+            }
+
+            val canCook = insufficientIngredients.isEmpty()
+            val bundle = Bundle().apply {
+                putBoolean("canCook", canCook)
+                if (!canCook) {
+                    putParcelableArrayList("missing_ingredients", ArrayList(insufficientIngredients))
+                }
+            }
+            resultReceiver?.send(0, bundle)
+        }
+    }
+
     private fun cookRecipe(recipe: Recipe, resultReceiver: ResultReceiver?) {
         CoroutineScope(Dispatchers.IO).launch {
             val savedIngredients = database.ingredientDao().getAllIngredientsSync()
-            val insufficientIngredients = recipe.ingredients.filter { required ->
-                val saved = savedIngredients.find { it.item.equals(required.item, ignoreCase = true) }
-                saved == null || saved.amount < required.amount.toDouble()
-            }
 
-            if (insufficientIngredients.isNotEmpty()) {
-                // Not enough ingredients
-                resultReceiver?.send(0, Bundle().apply {
-                    putBoolean("success", false)
-                })
-                return@launch
-            }
-
-            // Subtract ingredients from the database
             recipe.ingredients.forEach { required ->
-                val saved = savedIngredients.find { it.item.equals(required.item, ignoreCase = true) }
+                val saved = savedIngredients.find {
+                    it.item.equals(required.item, ignoreCase = true)
+                }
                 if (saved != null) {
-                    val updatedAmount = saved.amount- required.amount.toDouble()
-                    val updatedIngredient = saved.copy(amount = updatedAmount)
-                    database.ingredientDao().updateIngredient(updatedIngredient)
+                    try {
+                        val requiredAmountInSavedUnit = UnitConverter.convert(
+                            required.amount.toDouble(),
+                            QuantUnit.valueOf(required.unit),
+                            QuantUnit.valueOf(saved.unit)
+                        )
+
+                        val updatedAmount = saved.amount - requiredAmountInSavedUnit
+                        if (updatedAmount > 0) {
+                            val optimalUnit = UnitConverter.getOptimalUnit(updatedAmount, QuantUnit.valueOf(saved.unit))
+                            val normalizedAmount = UnitConverter.convert(updatedAmount, QuantUnit.valueOf(saved.unit), optimalUnit)
+
+                            val updatedIngredient = saved.copy(
+                                amount = normalizedAmount,
+                                unit = optimalUnit.name
+                            )
+                            database.ingredientDao().updateIngredient(updatedIngredient)
+                        } else {
+                            database.ingredientDao().deleteIngredientByNameAndUnit(saved.item, saved.unit)
+                        }
+                    } catch (e: IllegalArgumentException) {
+                        Log.e("cookRecipe", "Unit conversion failed for ${required.item}")
+                    }
                 }
             }
 
@@ -185,6 +233,7 @@ class DatabaseBackgroundService : Service() {
             notifyDatabaseChanged()
         }
     }
+
 
     private fun getSavedIngredientByNameAndUnit(name: String, unit: String, resultReceiver: ResultReceiver?) {
         CoroutineScope(Dispatchers.IO).launch {
