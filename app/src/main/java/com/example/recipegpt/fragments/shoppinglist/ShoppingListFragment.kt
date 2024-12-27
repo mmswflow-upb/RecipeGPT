@@ -1,6 +1,7 @@
 package com.example.recipegpt.fragments.shoppinglist
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +23,6 @@ class ShoppingListFragment : Fragment() {
 
     private val viewModel: ShoppingListViewModel by viewModels()
     private lateinit var ingredientAdapter: ShoppingListIngredientAdapter
-    private var selectedUnit: QuantUnit? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,9 +36,14 @@ class ShoppingListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
+        setupSearchBar()
         setupObservers()
         setupPopup()
 
+        // Handle clicking outside the popup
+        binding.overlayBackground.setOnClickListener {
+            viewModel.closePopup()
+        }
     }
 
     private fun setupRecyclerView() {
@@ -53,7 +58,9 @@ class ShoppingListFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        viewModel.shoppingList.observe(viewLifecycleOwner) { ingredients ->
+
+        viewModel.filteredShoppingList.observe(viewLifecycleOwner) { ingredients ->
+            Log.d("shopping list observer", "shopping list changed")
             ingredientAdapter.submitList(ingredients)
             binding.emptyShoppingListTextView.visibility =
                 if (ingredients.isEmpty()) View.VISIBLE else View.GONE
@@ -66,7 +73,43 @@ class ShoppingListFragment : Fragment() {
                 hidePopup()
             }
         }
+        viewModel.popupSelectedUnit.observe(viewLifecycleOwner) { selectedUnit ->
+            val unitIndex = QuantUnit.entries.indexOf(selectedUnit)
+            if (unitIndex != -1) {
+                binding.ingredientUnitSpinner.setSelection(unitIndex)
+            }
+        }
+
+
+        viewModel.query.observe(viewLifecycleOwner) { query ->
+            Log.d("query observer", "Query changed!")
+            binding.searchShoppingList.setText(query) // Ensure the search bar reflects the current query
+        }
+
+
     }
+
+    private fun setupSearchBar() {
+        // Set up the TextWatcher for live filtering
+        binding.searchShoppingList.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                Log.d("setupSearchBar-onTextChanged", "Text is changing")
+
+                val query = s.toString().trim()
+                viewModel.updateQuery(query) // Update the query in the ViewModel
+                viewModel.applyQueryFilter() // Apply the filter
+            }
+
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
+
+        // Restore the query in the search bar if it exists
+        binding.searchShoppingList.setText(viewModel.query.value)
+    }
+
+
 
     private fun setupPopup() {
         val units = QuantUnit.entries.map { it.unit }
@@ -76,7 +119,8 @@ class ShoppingListFragment : Fragment() {
 
         binding.ingredientUnitSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                selectedUnit = QuantUnit.entries.toTypedArray()[position]
+                val selectedUnit = QuantUnit.entries[position]
+                viewModel.updatePopupSelectedUnit(selectedUnit)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -85,10 +129,11 @@ class ShoppingListFragment : Fragment() {
         binding.popupDoneButton.setOnClickListener {
             val amount = binding.ingredientAmountInput.text.toString().toDoubleOrNull()
             val ingredient = viewModel.popupIngredient.value
+            val selectedUnit = viewModel.popupSelectedUnit.value
             if (amount != null && ingredient != null && selectedUnit != null) {
                 val updatedIngredient = ingredient.copy(
                     amount = amount,
-                    unit = selectedUnit!!.unit
+                    unit = selectedUnit.unit
                 )
                 viewModel.addToDatabase(updatedIngredient)
                 viewModel.closePopup()
@@ -98,11 +143,17 @@ class ShoppingListFragment : Fragment() {
 
     private fun showPopup(ingredient: Ingredient) {
         binding.ingredientPopupCard.visibility = View.VISIBLE
+        binding.overlayBackground.visibility = View.VISIBLE
         binding.popupTitle.text = getString(R.string.ingredient_popup_title, ingredient.item)
+        binding.ingredientAmountInput.setText(ingredient.amount.toString())
+
+        val unitIndex = QuantUnit.entries.indexOfFirst { it.unit == ingredient.unit }
+        binding.ingredientUnitSpinner.setSelection(if (unitIndex != -1) unitIndex else 0)
     }
 
     private fun hidePopup() {
         binding.ingredientPopupCard.visibility = View.GONE
+        binding.overlayBackground.visibility = View.GONE
         binding.ingredientAmountInput.text?.clear()
         binding.ingredientUnitSpinner.setSelection(0)
     }
@@ -112,4 +163,3 @@ class ShoppingListFragment : Fragment() {
         _binding = null
     }
 }
-

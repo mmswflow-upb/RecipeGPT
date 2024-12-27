@@ -47,7 +47,6 @@ class SavedRecipesFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val query = s.toString().trim()
                 viewModel.updateQuery(query)
-                viewModel.filterRecipes(query)
             }
 
             override fun afterTextChanged(s: android.text.Editable?) {}

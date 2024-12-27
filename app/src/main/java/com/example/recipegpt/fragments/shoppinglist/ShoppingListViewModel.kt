@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.os.ResultReceiver
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -23,19 +24,29 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
     private val context = application.applicationContext
 
     private val _shoppingList = MutableLiveData<List<Ingredient>>()
-    val shoppingList: LiveData<List<Ingredient>> get() = _shoppingList
+
+    private val _filteredShoppingList = MutableLiveData<List<Ingredient>>()
+    val filteredShoppingList: LiveData<List<Ingredient>> get() = _filteredShoppingList
 
     private val _popupIngredient = MutableLiveData<Ingredient?>()
     val popupIngredient: LiveData<Ingredient?> get() = _popupIngredient
 
-    private fun fetchShoppingList() {
-        CoroutineScope(Dispatchers.IO).launch {
-            // Step 1: Fetch saved recipes from the database
-            val recipeResultReceiver = object : ResultReceiver(null) {
-                override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-                    val recipes = resultData?.getParcelableArrayList("data", Recipe::class.java) ?: emptyList()
+    private val _popupSelectedUnit = MutableLiveData<QuantUnit>()
+    val popupSelectedUnit: LiveData<QuantUnit> get() = _popupSelectedUnit
 
-                    // Step 2: Extract and aggregate ingredients from all recipes
+    private val _query = MutableLiveData("")
+    val query: LiveData<String> get() = _query
+
+    init {
+        fetchListedRecipes() // Fetch only listed recipes on initialization
+    }
+
+    private fun fetchListedRecipes() {
+        CoroutineScope(Dispatchers.IO).launch {
+            Log.d("fetchListedRecipes", "Fetching listed recipes to get their ingredients")
+            val listedRecipesResultReceiver = object : ResultReceiver(null) {
+                override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+                    val recipes = resultData?.getParcelableArrayList("recipes", Recipe::class.java) ?: emptyList()
                     val totalNecessaryIngredients = mutableMapOf<String, Ingredient>()
                     recipes.forEach { recipe ->
                         recipe.ingredients.forEach { ingredient ->
@@ -58,17 +69,16 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
                         }
                     }
 
-                    // Step 3: Fetch saved ingredients from the database
                     val savedIngredientsResultReceiver = object : ResultReceiver(null) {
                         override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                             val savedIngredients =
                                 resultData?.getParcelableArrayList("data", Ingredient::class.java) ?: emptyList()
 
-                            // Step 4: Subtract saved amounts from total necessary
                             val shoppingList = mutableListOf<Ingredient>()
                             totalNecessaryIngredients.values.forEach { necessaryIngredient ->
-                                val savedIngredient = savedIngredients.find { it.item.equals(necessaryIngredient.item, ignoreCase = true) }
-
+                                val savedIngredient = savedIngredients.find {
+                                    it.item.equals(necessaryIngredient.item, ignoreCase = true)
+                                }
                                 if (savedIngredient != null) {
                                     val remainingAmount = maxOf(
                                         0.0,
@@ -78,7 +88,6 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
                                             QuantUnit.valueOf(savedIngredient.unit)
                                         ) - savedIngredient.amount.toDouble()
                                     )
-
                                     if (remainingAmount > 0) {
                                         shoppingList.add(
                                             Ingredient(
@@ -89,17 +98,13 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
                                         )
                                     }
                                 } else {
-                                    shoppingList.add(necessaryIngredient) // Fully needed if not saved
+                                    shoppingList.add(necessaryIngredient)
                                 }
                             }
-
-                            // Step 5: Update LiveData with the final shopping list
                             _shoppingList.postValue(shoppingList)
-                            _popupIngredient.postValue(null) // Close the popup when list updates
+                            applyQueryFilter() // Apply the saved query to the shopping list
                         }
                     }
-
-                    // Fetch saved ingredients
                     val savedIngredientsIntent = Intent(context, DatabaseBackgroundService::class.java).apply {
                         action = "GET_SAVED_INGREDIENTS"
                         putExtra("resultReceiver", savedIngredientsResultReceiver)
@@ -108,21 +113,31 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
                 }
             }
 
-            // Fetch saved recipes
-            val recipesIntent = Intent(context, DatabaseBackgroundService::class.java).apply {
-                action = "GET_SAVED_RECIPES"
-                putExtra("resultReceiver", recipeResultReceiver)
+            val fetchListedRecipesIntent = Intent(context, DatabaseBackgroundService::class.java).apply {
+                action = "FETCH_LISTED_RECIPES"
+                putExtra("resultReceiver", listedRecipesResultReceiver)
             }
-            context.startService(recipesIntent)
+            context.startService(fetchListedRecipesIntent)
         }
     }
 
-    init{
-        fetchShoppingList()
+    fun applyQueryFilter() {
+        Log.d("applyQueryFilter", "Filtering listed ingredients")
+
+        val currentList = _shoppingList.value.orEmpty()
+        val filteredList = currentList.filter { it.item.contains(_query.value.orEmpty(), ignoreCase = true) }
+        _filteredShoppingList.postValue(filteredList)
+    }
+
+    fun updateQuery(newQuery: String) {
+        Log.d("updateQuery", "Updating filter query")
+
+        _query.postValue(newQuery)
     }
 
     fun addToDatabase(ingredient: Ingredient) {
         CoroutineScope(Dispatchers.IO).launch {
+            Log.d("addToDatabase", "Adding to database the ingredient: ${ingredient.item}")
             val intent = Intent(context, DatabaseBackgroundService::class.java).apply {
                 action = "SAVE_OR_UPDATE_INGREDIENT"
                 putExtra("ingredient", ingredient)
@@ -131,11 +146,18 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
+    fun updatePopupSelectedUnit(unit: QuantUnit) {
+        _popupSelectedUnit.postValue(unit)
+    }
+
     fun openPopupForIngredient(ingredient: Ingredient) {
         _popupIngredient.postValue(ingredient)
+        _popupSelectedUnit.postValue(QuantUnit.entries.find { it.unit == ingredient.unit } ?: QuantUnit.whole_pieces)
     }
 
     fun closePopup() {
         _popupIngredient.postValue(null)
     }
+
+
 }

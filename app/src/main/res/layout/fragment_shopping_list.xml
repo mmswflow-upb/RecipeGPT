@@ -1,11 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/background"
-    android:layout_marginTop="25dp"
     android:padding="16dp">
 
     <!-- Title at the Top -->
@@ -16,7 +14,7 @@
         android:layout_centerHorizontal="true"
         android:text="@string/shopping_list"
         android:textColor="?attr/colorPrimary"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="24dp"
         android:textSize="24sp"
         android:textStyle="bold" />
 
@@ -26,18 +24,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/titleTextView"
-        android:layout_marginVertical="24dp"
+        android:layout_marginBottom="16dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:background="@drawable/rounded_rectangle_border"
-        android:baselineAligned="false"
         android:paddingVertical="6dp">
 
         <!-- Search Bar -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="10"
+            android:layout_weight="1"
             app:boxBackgroundMode="none"
             app:boxBackgroundColor="@android:color/transparent"
             app:boxStrokeColor="@android:color/transparent">
@@ -50,10 +47,9 @@
                 android:inputType="text"
                 android:textSize="18sp"
                 android:textColor="?attr/colorOnBackground"
+                android:importantForAutofill="no"
                 android:textColorHint="?attr/colorOnSurface"
                 android:backgroundTint="@android:color/transparent"
-                android:importantForAutofill="no"
-                android:backgroundTintMode="src_in"
                 android:imeOptions="actionSearch" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
@@ -62,9 +58,11 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/shoppingListRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_below="@id/searchRow"
+        android:layout_alignParentBottom="true"
         android:clipToPadding="false"
+        android:paddingBottom="16dp"
         android:scrollbars="vertical" />
 
     <!-- Empty State Text -->
@@ -78,7 +76,15 @@
         android:textColor="?attr/colorOnBackground"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:visibility="visible" />
+        android:visibility="gone" />
+
+    <!-- Overlay Background -->
+    <View
+        android:id="@+id/overlayBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/background"
+        android:visibility="gone" />
 
     <!-- Popup Card for Ingredient Details -->
     <androidx.cardview.widget.CardView
@@ -89,11 +95,11 @@
         android:layout_margin="16dp"
         app:cardBackgroundColor="?attr/background"
         app:cardCornerRadius="8dp"
-        app:cardElevation="4dp">
+        app:cardElevation="4dp"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:background="@drawable/rounded_rectangle_border"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp">
@@ -112,19 +118,16 @@
             <!-- Amount Input -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:boxBackgroundMode="none">
+                android:layout_height="wrap_content">
 
                 <EditText
-                    android:textColor="?attr/colorOnPrimary"
                     android:id="@+id/ingredientAmountInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:autofillHints=""
-
                     android:hint="@string/enter_amount"
-                    android:background="@android:color/transparent"
-                    android:inputType="numberDecimal" />
+                    android:inputType="numberDecimal"
+                    android:textColor="?attr/colorOnBackground"
+                    android:background="@android:color/transparent" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Unit Selector -->
@@ -132,11 +135,8 @@
                 android:id="@+id/ingredientUnitSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="48dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:entries="@array/quantity_units"
-                android:spinnerMode="dropdown" />
+                android:layout_marginBottom="16dp" />
 
             <!-- Done Button -->
             <Button

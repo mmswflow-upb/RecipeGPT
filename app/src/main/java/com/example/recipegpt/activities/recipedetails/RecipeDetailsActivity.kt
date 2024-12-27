@@ -68,8 +68,14 @@ class RecipeDetailsActivity : AppCompatActivity() {
                 )
                 val isAvailable = availability[ingredient.item] ?: false
                 ingredientBinding.ingredientAmount.setTextColor(
-                    if (isAvailable) resources.getColor(R.color.greenPrimary, null)
-                    else resources.getColor(R.color.redDark, null)
+                    if (isAvailable)
+                    {
+
+                        resources.getColor(R.color.greenPrimary, null)
+                    }
+                    else{ resources.getColor(R.color.redDark, null)
+                    }
+
                 )
                 binding.ingredientsList.addView(ingredientView)
             }
@@ -79,7 +85,6 @@ class RecipeDetailsActivity : AppCompatActivity() {
             Log.d("RecipeDetailsActivity", "Can be cooked's value changed: ${canBeCooked}")
             updateCookButton(canBeCooked)
         }
-
 
         // Save button handler
         binding.saveButton.setOnClickListener {
@@ -93,9 +98,7 @@ class RecipeDetailsActivity : AppCompatActivity() {
             viewModel.toggleRecipeListedStatus()
         }
 
-        viewModel.canBeCooked.observe(this) { canBeCooked ->
-            updateCookButton(canBeCooked)
-        }
+
 
         binding.cookButton.setOnClickListener {
             viewModel.cookRecipe { success ->
