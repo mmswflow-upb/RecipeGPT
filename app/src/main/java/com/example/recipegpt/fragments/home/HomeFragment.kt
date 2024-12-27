@@ -47,8 +47,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 val query = v.text.toString().trim()
                 if (query.isNotEmpty()) {
                     if(!viewModel.isSearching.value!!){
+                        binding.generateRecipesEditText.isEnabled = false
                         viewModel.updateQuery(query)
-                        performSearch(query)
+                        performGeneration(query)
                     }
                 } else {
                     Toast.makeText(requireContext(), "Enter a search query", Toast.LENGTH_SHORT).show()
@@ -80,14 +81,18 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
-    private fun performSearch(query: String) {
+    private fun performGeneration(query: String) {
 
         if(viewModel.isSearching.value == false){
-            viewModel.updateSearchingStatus(true)
+            viewModel.updateGeneratingStatus(true)
             lifecycleScope.launch {
 
-                viewModel.generateRecipes(query)
+                viewModel.generateRecipes(query) { isDisabled ->
+                    binding.generateRecipesEditText.isEnabled = !isDisabled
+                }
             }
+        }else{
+            Toast.makeText(context, R.string.recipes_generation_in_process, Toast.LENGTH_SHORT).show()
         }
 
     }

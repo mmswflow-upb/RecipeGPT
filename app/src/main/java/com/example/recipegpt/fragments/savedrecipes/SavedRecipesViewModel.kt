@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -23,7 +24,7 @@ class SavedRecipesViewModel(application: Application) : AndroidViewModel(applica
 
     // LiveData to hold all saved recipes (complete list)
     private val _savedRecipes = MutableLiveData<List<Recipe>>()
-
+    val savedRecipes : LiveData<List<Recipe>> get() = _savedRecipes
     // LiveData to hold the filtered recipes
     private val _filteredRecipes = MutableLiveData<List<Recipe>>()
     val filteredRecipes: LiveData<List<Recipe>> get() = _filteredRecipes
@@ -61,6 +62,10 @@ class SavedRecipesViewModel(application: Application) : AndroidViewModel(applica
                         val recipes: List<Recipe>? =
                             resultData?.getParcelableArrayList("data", Recipe::class.java)
                         _savedRecipes.postValue(recipes ?: emptyList())
+
+                        _savedRecipes.value?.forEach{ recipe -> Log.d("SavedRecipesViewModel-fetchSavedRecipes", "Is ${recipe.title} listed: ${recipe.listed}")}
+
+
                         // Initially set the filtered list to the complete list
                         _filteredRecipes.postValue(recipes ?: emptyList())
                     }
@@ -76,6 +81,7 @@ class SavedRecipesViewModel(application: Application) : AndroidViewModel(applica
             recipe.title.contains(query, ignoreCase = true)
         }
         _filteredRecipes.postValue(filteredList ?: emptyList())
+
     }
 
     fun updateQuery(newQuery: String) {

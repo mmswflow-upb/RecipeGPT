@@ -1,8 +1,11 @@
 package com.example.recipegpt.activities.recipedetails
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.recipegpt.R
@@ -30,12 +33,15 @@ class RecipeDetailsActivity : AppCompatActivity() {
         viewModel.recipe.observe(this) { currentRecipe ->
             if (currentRecipe != null) {
                 displayRecipeDetails(currentRecipe)
+                updateListIngredientsButton(currentRecipe.listed)
             }
         }
 
         // Observe the saved status to update the save button
+        // Observe the saved status to update the save button and toggle `listIngredients`
         viewModel.isRecipeSaved.observe(this) { isSaved ->
             updateSaveButton(isSaved)
+            toggleListIngredientsVisibility(isSaved)
         }
 
         //Update the colors of the ingredient amounts in case there's a change in the saved ingredients DB
@@ -73,17 +79,38 @@ class RecipeDetailsActivity : AppCompatActivity() {
             viewModel.toggleRecipeSavedStatus()
         }
 
-        binding.listIngredients.setOnClickListener{
 
+
+        binding.listIngredients.setOnClickListener {
+            viewModel.toggleListingStatus()
         }
 
         binding.cookButton.setOnClickListener {
-            // Cook functionality (to be implemented)
+            viewModel.cookRecipe { success ->
+                val message = if (success) {
+                    getString(R.string.recipe_cooked_successfully)
+                } else {
+                    getString(R.string.not_enough_ingredients)
+                }
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            }
         }
+
 
         binding.shareButton.setOnClickListener {
             shareRecipeDetails()
         }
+    }
+
+    private fun updateListIngredientsButton(isListed: Boolean) {
+
+        val color = if (isListed) resources.getColor(R.color.greenPrimary, null)
+        else resources.getColor(R.color.redLight, null)
+        binding.listIngredients.imageTintList = ColorStateList.valueOf(
+            color)
+
+        binding.listIngredients.backgroundTintList = ColorStateList.valueOf(
+            color)
     }
 
     private fun displayRecipeDetails(recipe: Recipe) {
@@ -149,7 +176,13 @@ class RecipeDetailsActivity : AppCompatActivity() {
         }
     }
 
-
+    private fun toggleListIngredientsVisibility(isSaved: Boolean) {
+        binding.listIngredients.visibility = if (isSaved) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+    }
 
     private fun shareRecipeDetails() {
         val recipe = viewModel.recipe.value ?: return
@@ -184,7 +217,7 @@ class RecipeDetailsActivity : AppCompatActivity() {
 
 
     private fun updateSaveButton(isSaved: Boolean) {
-        Log.d("RecipeDetailsViewModel-updateSaveButton", "Is recipe saved: $isSaved")
+        Log.d("RecipeDetails-updateSaveButton", "Is recipe saved: $isSaved")
         if (isSaved) {
             binding.saveButton.setImageResource(R.drawable.ic_recipe_saved)
 

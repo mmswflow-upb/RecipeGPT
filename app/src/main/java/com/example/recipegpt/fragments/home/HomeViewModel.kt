@@ -67,7 +67,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private val settingsReceiver = object : BroadcastReceiver() {
+    private val preferencesReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val newFrequency = intent.getStringExtra(SharedPreferencesManager.EXTRA_RANDOM_QUOTE_FREQUENCY)
             val newMaxResults = intent.getIntExtra(SharedPreferencesManager.EXTRA_MAX_RESULTS, _numberOfRecipes.value ?: 2)
@@ -87,7 +87,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
         // Listen for shared preferences updates
         val filter = IntentFilter(SharedPreferencesManager.ACTION_SETTINGS_UPDATED)
-        LocalBroadcastManager.getInstance(application).registerReceiver(settingsReceiver, filter)
+        LocalBroadcastManager.getInstance(application).registerReceiver(preferencesReceiver, filter)
     }
 
     fun bindService(context: Context) {
@@ -106,7 +106,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _query.value = newQuery
     }
 
-    fun updateSearchingStatus(status: Boolean) {
+    fun updateGeneratingStatus(status: Boolean) {
         _isSearching.value = status
     }
 
@@ -158,11 +158,14 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         context.startService(intent)
     }
 
-    fun generateRecipes(query: String) {
+    fun generateRecipes(query: String, disableEditText: (Boolean) -> Unit) {
         val context = getApplication<Application>().applicationContext
 
         if (_isBound.value == true && _recipeService != null) {
-            updateSearchingStatus(true)
+            updateGeneratingStatus(true)
+
+            // Disable the EditText
+            disableEditText(true)
 
             // Start the foreground service
             startSearchNotificationService(context, query)
@@ -175,11 +178,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                                 QuantUnit.valueOf(ingredient.unit)
                                 ingredient.unit // Valid unit
                             } catch (e: IllegalArgumentException) {
-                                Log.d("HomeViewModel-generateRecipes","${ingredient.item}: Unit didnt match enum, converting to whole_pieces")
-                                 QuantUnit.whole_pieces.unit // Replace with default
-
+                                Log.d("HomeViewModel-generateRecipes", "${ingredient.item}: Unit didn't match enum, converting to whole_pieces")
+                                QuantUnit.whole_pieces.unit // Replace with default
                             }
-
 
                             ingredient.copy(unit = unit)
                         }
@@ -187,7 +188,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 }
 
                 updateRecipes(updatedRecipes)
-                updateSearchingStatus(false)
+                updateGeneratingStatus(false)
+
+                // Re-enable the EditText
+                disableEditText(false)
 
                 // Stop the foreground service
                 stopSearchNotificationService(context)
@@ -198,8 +202,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
 
 
+
     override fun onCleared() {
         super.onCleared()
-        LocalBroadcastManager.getInstance(getApplication()).unregisterReceiver(settingsReceiver)
+        LocalBroadcastManager.getInstance(getApplication()).unregisterReceiver(preferencesReceiver)
     }
 }

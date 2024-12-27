@@ -13,7 +13,7 @@ data class RecipeEntity(
     val title: String,
     val estimatedCookingTime: Int,
     val servings: Int,
-    var cooking: Boolean,
+    var listed: Boolean,
     @TypeConverters(Converters::class) val ingredients: List<Ingredient>,
     @TypeConverters(Converters::class) val instructions: List<String>
 )
@@ -26,7 +26,7 @@ fun Recipe.toRecipeEntity() = RecipeEntity(
     servings = this.servings,
     ingredients = this.ingredients,
     instructions = this.instructions,
-    cooking= this.cooking
+    listed= this.listed
 )
 
 fun RecipeEntity.toRecipeModel() = Recipe(
@@ -35,7 +35,8 @@ fun RecipeEntity.toRecipeModel() = Recipe(
     servings = this.servings,
     ingredients = this.ingredients,
     instructions = this.instructions,
-    cooking = this.cooking
+    listed= this.listed
+
 )
 
 

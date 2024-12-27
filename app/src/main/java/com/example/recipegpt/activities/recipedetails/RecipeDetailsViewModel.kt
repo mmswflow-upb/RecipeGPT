@@ -58,6 +58,49 @@ class RecipeDetailsViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
+    init {
+
+    }
+
+
+    fun toggleListingStatus() {
+        val currentRecipe = _recipe.value ?: return
+        val updatedRecipe = currentRecipe.copy(listed = !currentRecipe.listed)
+
+        // Update the recipe in the database
+        CoroutineScope(Dispatchers.IO).launch {
+            val intent = Intent(context, DatabaseBackgroundService::class.java).apply {
+                action = "SAVE_OR_REPLACE_RECIPE"
+                putExtra("recipe", updatedRecipe)
+            }
+            context.startService(intent)
+        }
+
+        // Update LiveData
+        _recipe.postValue(updatedRecipe)
+    }
+
+    fun cookRecipe(callback: (Boolean) -> Unit) {
+        val currentRecipe = _recipe.value ?: return
+
+        val resultReceiver = object : android.os.ResultReceiver(null) {
+            override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+                val success = resultData?.getBoolean("success", false) ?: false
+                callback(success)
+            }
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val intent = Intent(context, DatabaseBackgroundService::class.java).apply {
+                action = "COOK_RECIPE"
+                putExtra("recipe", currentRecipe)
+                putExtra("resultReceiver", resultReceiver)
+            }
+            context.startService(intent)
+        }
+    }
+
+
     // Save or delete the recipe
     fun toggleRecipeSavedStatus() {
         val currentRecipe = _recipe.value ?: return
@@ -73,6 +116,8 @@ class RecipeDetailsViewModel(application: Application) : AndroidViewModel(applic
         context.startService(intent)
         _isRecipeSaved.postValue(!isSaved) // Update UI state optimistically
     }
+
+
 
     // Check ingredient availability against saved ingredients
     private fun checkIngredientAvailability(requiredIngredients: List<Ingredient>) {

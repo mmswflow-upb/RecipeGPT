@@ -75,6 +75,13 @@ class DatabaseBackgroundService : Service() {
                 val name = intent.getStringExtra("name")
                 if (name != null) deleteIngredientByName(name, resultReceiver)
             }
+            "COOK_RECIPE" -> {
+                val recipe = intent.getParcelableExtra("recipe", Recipe::class.java)
+                if (recipe != null) cookRecipe(recipe, resultReceiver)
+            }
+            "FETCH_LISTED_RECIPES" -> {
+                 fetchListedRecipes(resultReceiver)
+            }
         }
         return START_STICKY
     }
@@ -84,9 +91,9 @@ class DatabaseBackgroundService : Service() {
     private fun getSavedRecipes(resultReceiver: ResultReceiver?) {
         CoroutineScope(Dispatchers.IO).launch {
             val recipes = database.recipeDao().getAllRecipesSync()
-            Log.d("DBBackgroundService-getSavedRecipes", "recipeEntities: ${recipes?.size}")
+            Log.d("DBBackgroundService-getSavedRecipes", "recipeEntities: ${recipes.size}")
 
-            val recipeModels = recipes?.map { it.toRecipeModel() } ?: emptyList()
+            val recipeModels = recipes.map { it.toRecipeModel() }
             Log.d("DBBackgroundService-getSavedRecipes", "recipeModels: $recipeModels")
             val bundle = Bundle().apply {
                 putParcelableArrayList("data", ArrayList(recipeModels))
@@ -132,11 +139,57 @@ class DatabaseBackgroundService : Service() {
     private fun getSavedIngredients(resultReceiver: ResultReceiver?) {
         CoroutineScope(Dispatchers.IO).launch {
             val ingredients = database.ingredientDao().getAllIngredientsSync()
-            val ingredientModels = ingredients?.map { it.toIngredientModel() } ?: emptyList<Ingredient>()
+            val ingredientModels = ingredients.map { it.toIngredientModel() }
             val bundle = Bundle().apply {
                 putParcelableArrayList("data", ArrayList(ingredientModels))
             }
             resultReceiver?.send(0, bundle)
+        }
+    }
+
+    private fun fetchListedRecipes(resultReceiver: ResultReceiver?) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val recipes = database.recipeDao().getListedRecipes()
+            val recipeList = recipes.map { it.toRecipeModel() } // Convert to Recipe model
+            val bundle = Bundle().apply {
+                putParcelableArrayList("recipes", ArrayList(recipeList))
+            }
+            resultReceiver?.send(0, bundle)
+        }
+    }
+
+
+
+    private fun cookRecipe(recipe: Recipe, resultReceiver: ResultReceiver?) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val savedIngredients = database.ingredientDao().getAllIngredientsSync()
+            val insufficientIngredients = recipe.ingredients.filter { required ->
+                val saved = savedIngredients.find { it.item.equals(required.item, ignoreCase = true) }
+                saved == null || saved.amount < required.amount.toDouble()
+            }
+
+            if (insufficientIngredients.isNotEmpty()) {
+                // Not enough ingredients
+                resultReceiver?.send(0, Bundle().apply {
+                    putBoolean("success", false)
+                })
+                return@launch
+            }
+
+            // Subtract ingredients from the database
+            recipe.ingredients.forEach { required ->
+                val saved = savedIngredients.find { it.item.equals(required.item, ignoreCase = true) }
+                if (saved != null) {
+                    val updatedAmount = saved.amount- required.amount.toDouble()
+                    val updatedIngredient = saved.copy(amount = updatedAmount)
+                    database.ingredientDao().updateIngredient(updatedIngredient)
+                }
+            }
+
+            resultReceiver?.send(0, Bundle().apply {
+                putBoolean("success", true)
+            })
+            notifyDatabaseChanged()
         }
     }
 

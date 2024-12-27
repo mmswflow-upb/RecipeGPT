@@ -67,6 +67,10 @@ class SavedRecipesFragment : Fragment() {
             }
         }
 
+        viewModel.savedRecipes.observe(viewLifecycleOwner) {
+            viewModel.filterRecipes(viewModel.query.value ?: "")
+        }
+
         // Observe filtered recipes LiveData
         viewModel.filteredRecipes.observe(viewLifecycleOwner) { recipes ->
             recipeAdapter.submitList(recipes)
