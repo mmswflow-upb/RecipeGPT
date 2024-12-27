@@ -12,6 +12,7 @@ import com.example.recipegpt.R
 import com.example.recipegpt.databinding.ActivityRecipeDetailsBinding
 import com.example.recipegpt.models.QuantUnit
 import com.example.recipegpt.models.Recipe
+import kotlinx.coroutines.CoroutineScope
 
 class RecipeDetailsActivity : AppCompatActivity() {
 
@@ -82,18 +83,21 @@ class RecipeDetailsActivity : AppCompatActivity() {
 
 
         binding.listIngredients.setOnClickListener {
-            viewModel.toggleListingStatus()
+            viewModel.toggleRecipeListedStatus()
         }
 
         binding.cookButton.setOnClickListener {
+            var message = ""
             viewModel.cookRecipe { success ->
-                val message = if (success) {
+                 message = if (success) {
                     getString(R.string.recipe_cooked_successfully)
                 } else {
                     getString(R.string.not_enough_ingredients)
                 }
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+
             }
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+
         }
 
 

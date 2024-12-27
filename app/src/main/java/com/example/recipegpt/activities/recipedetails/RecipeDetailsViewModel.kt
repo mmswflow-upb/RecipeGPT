@@ -43,8 +43,9 @@ class RecipeDetailsViewModel(application: Application) : AndroidViewModel(applic
     private fun checkIfRecipeIsSaved(recipeTitle: String) {
         val resultReceiver = object : android.os.ResultReceiver(null) {
             override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-                val recipeExists = resultData?.getParcelable("data", Recipe::class.java) != null
-                _isRecipeSaved.postValue(recipeExists)
+                val recipe = resultData?.getParcelable("data", Recipe::class.java)
+
+                _isRecipeSaved.postValue(recipe != null)
             }
         }
 
@@ -58,14 +59,11 @@ class RecipeDetailsViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    init {
 
-    }
-
-
-    fun toggleListingStatus() {
+    fun toggleRecipeListedStatus() {
         val currentRecipe = _recipe.value ?: return
         val updatedRecipe = currentRecipe.copy(listed = !currentRecipe.listed)
+
 
         // Update the recipe in the database
         CoroutineScope(Dispatchers.IO).launch {
@@ -116,7 +114,6 @@ class RecipeDetailsViewModel(application: Application) : AndroidViewModel(applic
         context.startService(intent)
         _isRecipeSaved.postValue(!isSaved) // Update UI state optimistically
     }
-
 
 
     // Check ingredient availability against saved ingredients

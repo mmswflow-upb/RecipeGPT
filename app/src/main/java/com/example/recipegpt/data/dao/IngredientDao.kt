@@ -1,6 +1,5 @@
 package com.example.recipegpt.data.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -14,8 +13,8 @@ interface IngredientDao {
     suspend fun getAllIngredientsSync(): List<IngredientEntity>
 
 
-    @Query("SELECT * FROM ingredients WHERE item = :name")
-    suspend fun getIngredientByNameSync(name: String): IngredientEntity?
+    @Query("SELECT * FROM ingredients WHERE item = :name AND unit = :unit")
+    suspend fun getIngredientByNameAndUnitSync(name: String, unit: String): IngredientEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertIngredient(ingredient: IngredientEntity)
@@ -23,6 +22,6 @@ interface IngredientDao {
     @Update
     suspend fun updateIngredient(ingredient: IngredientEntity)
 
-    @Query("DELETE FROM ingredients WHERE item = :name")
-    suspend fun deleteIngredientByName(name: String)
+    @Query("DELETE FROM ingredients WHERE item = :name AND unit = :unit")
+    suspend fun deleteIngredientByNameAndUnit(name: String, unit: String)
 }

@@ -42,30 +42,28 @@ class DatabaseBackgroundService : Service() {
         val action = intent?.action
         val resultReceiver = intent?.getParcelableExtra("resultReceiver", ResultReceiver::class.java)
 
-        Log.d("DBBackgroundService-onStartCommand", "The action: $action")
         when (action) {
             "GET_SAVED_RECIPES" -> getSavedRecipes(resultReceiver)
             "GET_RECIPE_BY_NAME" -> {
                 val name = intent.getStringExtra("name")
-                Log.d("DBBackgroundService-onStartCommand", "Searched recipe name: $name")
 
                 if (name != null) getSavedRecipeByName(name, resultReceiver)
             }
             "SAVE_OR_REPLACE_RECIPE" -> {
                 val recipe = intent.getParcelableExtra("recipe", Recipe::class.java)
-                Log.d("DBBackgroundService-onStartCommand", "Saved Recipe name: ${recipe?.title}")
-
+                Log.d("DBService-onStart", "Save or replacing: ${recipe?.title} with listing : ${recipe?.listed}")
                 if (recipe != null) saveOrReplaceRecipe(recipe, resultReceiver)
             }
             "DELETE_RECIPE_BY_NAME" -> {
                 val name = intent.getStringExtra("name")
-                Log.d("DBBackgroundService-onStartCommand", "Deleted Recipe name: $name")
                 if (name != null) deleteRecipeByName(name, resultReceiver)
             }
             "GET_SAVED_INGREDIENTS" -> getSavedIngredients(resultReceiver)
             "GET_INGREDIENT_BY_NAME" -> {
                 val name = intent.getStringExtra("name")
-                if (name != null) getSavedIngredientByName(name, resultReceiver)
+                val unit = intent.getStringExtra("unit")
+
+                if (name != null && unit != null) getSavedIngredientByNameAndUnit(name, unit, resultReceiver)
             }
             "SAVE_OR_UPDATE_INGREDIENT" -> {
                 val ingredient = intent.getParcelableExtra("ingredient", Ingredient::class.java)
@@ -73,7 +71,8 @@ class DatabaseBackgroundService : Service() {
             }
             "DELETE_INGREDIENT_BY_NAME" -> {
                 val name = intent.getStringExtra("name")
-                if (name != null) deleteIngredientByName(name, resultReceiver)
+                val unit = intent.getStringExtra("unit")
+                if (name != null && unit != null) deleteIngredientByNameAndUnit(name, unit,  resultReceiver)
             }
             "COOK_RECIPE" -> {
                 val recipe = intent.getParcelableExtra("recipe", Recipe::class.java)
@@ -91,13 +90,12 @@ class DatabaseBackgroundService : Service() {
     private fun getSavedRecipes(resultReceiver: ResultReceiver?) {
         CoroutineScope(Dispatchers.IO).launch {
             val recipes = database.recipeDao().getAllRecipesSync()
-            Log.d("DBBackgroundService-getSavedRecipes", "recipeEntities: ${recipes.size}")
 
             val recipeModels = recipes.map { it.toRecipeModel() }
-            Log.d("DBBackgroundService-getSavedRecipes", "recipeModels: $recipeModels")
             val bundle = Bundle().apply {
                 putParcelableArrayList("data", ArrayList(recipeModels))
             }
+
             resultReceiver?.send(0, bundle)
         }
     }
@@ -110,18 +108,14 @@ class DatabaseBackgroundService : Service() {
                 putParcelable("data", recipe)
             }
             resultReceiver?.send(0, bundle)
+
         }
     }
 
     private fun saveOrReplaceRecipe(recipe: Recipe, resultReceiver: ResultReceiver?) {
         CoroutineScope(Dispatchers.IO).launch {
             val recipeEntity = recipe.toRecipeEntity()
-            val existingRecipe = database.recipeDao().getRecipeByNameSync(recipeEntity.title)
-            if (existingRecipe != null) {
-                database.recipeDao().updateRecipe(recipeEntity)
-            } else {
-                database.recipeDao().insertRecipe(recipeEntity)
-            }
+            database.recipeDao().insertRecipe(recipeEntity)
             resultReceiver?.send(0, null)
             notifyDatabaseChanged()
         }
@@ -159,7 +153,6 @@ class DatabaseBackgroundService : Service() {
     }
 
 
-
     private fun cookRecipe(recipe: Recipe, resultReceiver: ResultReceiver?) {
         CoroutineScope(Dispatchers.IO).launch {
             val savedIngredients = database.ingredientDao().getAllIngredientsSync()
@@ -193,9 +186,9 @@ class DatabaseBackgroundService : Service() {
         }
     }
 
-    private fun getSavedIngredientByName(name: String, resultReceiver: ResultReceiver?) {
+    private fun getSavedIngredientByNameAndUnit(name: String, unit: String, resultReceiver: ResultReceiver?) {
         CoroutineScope(Dispatchers.IO).launch {
-            val ingredientEntity = database.ingredientDao().getIngredientByNameSync(name)
+            val ingredientEntity = database.ingredientDao().getIngredientByNameAndUnitSync(name, unit)
             val ingredient = ingredientEntity?.toIngredientModel()
             val bundle = Bundle().apply {
                 putParcelable("data", ingredient)
@@ -204,10 +197,11 @@ class DatabaseBackgroundService : Service() {
         }
     }
 
+
     private fun saveOrUpdateIngredient(ingredient: Ingredient, resultReceiver: ResultReceiver?) {
         CoroutineScope(Dispatchers.IO).launch {
             val ingredientEntity = ingredient.toIngredientEntity()
-            val existingIngredient = database.ingredientDao().getIngredientByNameSync(ingredientEntity.item)
+            val existingIngredient = database.ingredientDao().getIngredientByNameAndUnitSync(ingredientEntity.item, ingredientEntity.unit)
 
             if (existingIngredient != null) {
                 // Use UnitConverter to add the amounts
@@ -247,13 +241,12 @@ class DatabaseBackgroundService : Service() {
         }
     }
 
-
-    private fun deleteIngredientByName(name: String, resultReceiver: ResultReceiver?) {
+    private fun deleteIngredientByNameAndUnit(name: String, unit: String, resultReceiver: ResultReceiver?) {
         CoroutineScope(Dispatchers.IO).launch {
-            database.ingredientDao().deleteIngredientByName(name)
+            database.ingredientDao().deleteIngredientByNameAndUnit(name, unit)
             resultReceiver?.send(0, null)
             notifyDatabaseChanged()
-
         }
     }
+
 }

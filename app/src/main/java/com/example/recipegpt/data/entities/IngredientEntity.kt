@@ -2,14 +2,14 @@
 package com.example.recipegpt.data.entities
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.example.recipegpt.models.Converters
 import com.example.recipegpt.models.Ingredient
 
-@Entity(tableName = "ingredients")
+//Primary key is a combo of the item and unit
+@Entity(tableName = "ingredients", primaryKeys = ["item", "unit"])
 data class IngredientEntity(
-    @PrimaryKey() val item: String, // Unique name of the ingredient
+    val item: String,
     @TypeConverters(Converters::class) val amount: Double, // Amount of the ingredient
     @TypeConverters(Converters::class) val unit: String // Measurement unit (e.g., grams, cups)
 )

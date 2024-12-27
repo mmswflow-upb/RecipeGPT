@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -62,8 +61,6 @@ class SavedRecipesViewModel(application: Application) : AndroidViewModel(applica
                         val recipes: List<Recipe>? =
                             resultData?.getParcelableArrayList("data", Recipe::class.java)
                         _savedRecipes.postValue(recipes ?: emptyList())
-
-                        _savedRecipes.value?.forEach{ recipe -> Log.d("SavedRecipesViewModel-fetchSavedRecipes", "Is ${recipe.title} listed: ${recipe.listed}")}
 
 
                         // Initially set the filtered list to the complete list

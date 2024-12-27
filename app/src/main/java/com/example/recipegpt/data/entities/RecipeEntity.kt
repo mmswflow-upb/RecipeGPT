@@ -9,8 +9,7 @@ import com.example.recipegpt.models.Recipe
 
 @Entity(tableName = "recipes")
 data class RecipeEntity(
-    @PrimaryKey val id: Int,
-    val title: String,
+    @PrimaryKey val title: String,
     val estimatedCookingTime: Int,
     val servings: Int,
     var listed: Boolean,
@@ -20,7 +19,6 @@ data class RecipeEntity(
 
 
 fun Recipe.toRecipeEntity() = RecipeEntity(
-    id = (System.currentTimeMillis() % Int.MAX_VALUE).toInt(), // Generate a unique ID
     title = this.title,
     estimatedCookingTime = this.estimatedCookingTime,
     servings = this.servings,

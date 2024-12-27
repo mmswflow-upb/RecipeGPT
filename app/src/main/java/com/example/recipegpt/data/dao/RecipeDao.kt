@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
 import com.example.recipegpt.data.entities.RecipeEntity
 
 @Dao
@@ -21,8 +20,7 @@ interface RecipeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecipe(recipe: RecipeEntity)
 
-    @Update
-    suspend fun updateRecipe(recipe: RecipeEntity)
+
 
     @Query("DELETE FROM recipes WHERE title = :name")
     suspend fun deleteRecipeByName(name: String)
