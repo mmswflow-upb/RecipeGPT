@@ -80,6 +80,28 @@ class ShoppingListFragment : Fragment() {
         viewModel.shoppingList.observe(viewLifecycleOwner) {
             viewModel.applyQueryFilter()
         }
+
+        viewModel.popupIngredient.observe(viewLifecycleOwner){ ingredient ->
+            if (ingredient != null){
+                showPopup()
+            }else{
+                hidePopup()
+            }
+        }
+
+        viewModel.popupSelectedUnit.observe(viewLifecycleOwner){ newUnit ->
+            if(newUnit?.unit != null){
+                val displayName = UnitConverter.getDisplayName( requireContext() ,
+                    QuantUnit.entries.first { it.unit ==  newUnit.unit}
+                )
+                val unitIndex = QuantUnit.entries.indexOfFirst {
+                    UnitConverter.getDisplayName(requireContext(), it) == displayName
+                }
+                binding.ingredientUnitSpinner.setSelection(if (unitIndex != -1) unitIndex else 0)
+
+            }
+        }
+
     }
 
     private fun setupSearchBar() {
@@ -142,19 +164,14 @@ class ShoppingListFragment : Fragment() {
 
 
 
-    private fun showPopup(ingredient: Ingredient) {
+    private fun showPopup() {
+        val ingredient = viewModel.popupIngredient.value!!
         binding.ingredientPopupCard.visibility = View.VISIBLE
         binding.overlayBackground.visibility = View.VISIBLE
         binding.popupTitle.text = getString(R.string.ingredient_popup_title, ingredient.item)
         binding.ingredientAmountInput.setText(ingredient.amount.toString())
 
-        val displayName = UnitConverter.getDisplayName( requireContext() ,
-            QuantUnit.entries.first { it.unit == ingredient.unit }
-        )
-        val unitIndex = QuantUnit.entries.indexOfFirst {
-            UnitConverter.getDisplayName(requireContext(), it) == displayName
-        }
-        binding.ingredientUnitSpinner.setSelection(if (unitIndex != -1) unitIndex else 0)
+
     }
 
 

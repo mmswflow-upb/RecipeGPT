@@ -37,7 +37,7 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
     private val _popupIngredient = MutableLiveData<Ingredient?>()
     val popupIngredient: LiveData<Ingredient?> get() = _popupIngredient
 
-    private val _popupSelectedUnit = MutableLiveData<QuantUnit>()
+    private val _popupSelectedUnit = MutableLiveData<QuantUnit?>()
     val popupSelectedUnit: LiveData<QuantUnit?> get() = _popupSelectedUnit
 
     private val _query = MutableLiveData("")
@@ -172,6 +172,15 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
         applyQueryFilter()
     }
 
+    fun setPopupIngredient(newIngredient: Ingredient?){
+        _popupIngredient.value = newIngredient
+    }
+
+    fun setPopupSelectedUnit(newUnit: QuantUnit?){
+        _popupSelectedUnit.value = newUnit
+    }
+
+
     fun addToDatabase(ingredient: Ingredient) {
         CoroutineScope(Dispatchers.IO).launch {
             Log.d("addToDatabase", "Adding or updating ingredient in DB: ${ingredient.item}")
@@ -188,13 +197,14 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun openPopupForIngredient(ingredient: Ingredient) {
-        _popupIngredient.postValue(ingredient)
-        _popupSelectedUnit.postValue(
+        _popupIngredient.value = ingredient
+        _popupSelectedUnit.value =
             QuantUnit.entries.find { it.unit == ingredient.unit } ?: QuantUnit.whole_pieces
-        )
+
     }
 
     fun closePopup() {
         _popupIngredient.value = null
+        _popupSelectedUnit.value = null
     }
 }
