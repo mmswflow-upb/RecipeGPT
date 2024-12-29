@@ -64,6 +64,8 @@
 
     <string name="ingredients_search_hint">Search Ingredients</string>
     <string name="ingredient_popup_title">Set added amount for %1$s</string>
+    <string name="saved_ingredient_popup_title">Edit amount for %1$s</string>
+
     <string name="enter_amount">Enter amount</string>
     <string name="done">Done</string>
 
@@ -94,5 +96,11 @@
     <string name="recipes_generation_in_process">Wait for the current prompt to be processed!</string>
     <string name="milligrams">milligrams</string>
     <string name="drops">drops</string>
+    <string name="saved_ingredients">Ingredients</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="edit_purchased_ingredient">Edit the purchased ingredient</string>
+    <string name="delete_purchased_ingredientt">Delete the purchased ingredient</string>
+    <string name="invalid_amount_warning">Invalid amount for ingredient</string>
+    <string name="invalid_input_ingredient_popup">Invalid input</string>
 
 </resources>

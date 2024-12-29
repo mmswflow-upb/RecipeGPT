@@ -59,7 +59,7 @@ class DatabaseBackgroundService : Service() {
                 if (name != null) deleteRecipeByName(name, resultReceiver)
             }
             "GET_SAVED_INGREDIENTS" -> getSavedIngredients(resultReceiver)
-            "GET_INGREDIENT_BY_NAME" -> {
+            "GET_INGREDIENT_BY_NAME_AND_UNIT" -> {
                 val name = intent.getStringExtra("name")
                 val unit = intent.getStringExtra("unit")
 
@@ -69,7 +69,7 @@ class DatabaseBackgroundService : Service() {
                 val ingredient = intent.getParcelableExtra("ingredient", Ingredient::class.java)
                 if (ingredient != null) saveOrUpdateIngredient(ingredient, resultReceiver)
             }
-            "DELETE_INGREDIENT_BY_NAME" -> {
+            "DELETE_INGREDIENT_BY_NAME_AND_UNIT" -> {
                 val name = intent.getStringExtra("name")
                 val unit = intent.getStringExtra("unit")
                 if (name != null && unit != null) deleteIngredientByNameAndUnit(name, unit,  resultReceiver)

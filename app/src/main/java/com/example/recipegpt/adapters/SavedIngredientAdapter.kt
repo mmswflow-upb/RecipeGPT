@@ -6,17 +6,18 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.recipegpt.R
-import com.example.recipegpt.databinding.ShoppingListItemIngredientBinding
+import com.example.recipegpt.databinding.SavedListItemIngredientBinding
 import com.example.recipegpt.models.Ingredient
 import com.example.recipegpt.models.QuantUnit
 import com.example.recipegpt.models.UnitConverter
 
 
 
-class ShoppingListIngredientAdapter(
+class SavedIngredientAdapter(
     private val context: Context,
-    private val onCartButtonClicked: (Ingredient) -> Unit
-) : RecyclerView.Adapter<ShoppingListIngredientAdapter.IngredientViewHolder>() {
+    private val onEditButtonClicked: (Ingredient) -> Unit,
+    private val onDeleteButtonClicked : (Ingredient) -> Unit
+) : RecyclerView.Adapter<SavedIngredientAdapter.IngredientViewHolder>() {
 
     private val ingredients = mutableListOf<Ingredient>()
 
@@ -28,7 +29,7 @@ class ShoppingListIngredientAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IngredientViewHolder {
-        val binding = ShoppingListItemIngredientBinding.inflate(
+        val binding = SavedListItemIngredientBinding.inflate(
             LayoutInflater.from(context),
             parent,
             false
@@ -43,7 +44,7 @@ class ShoppingListIngredientAdapter(
     override fun getItemCount(): Int = ingredients.size
 
     inner class IngredientViewHolder(
-        private val binding: ShoppingListItemIngredientBinding
+        private val binding: SavedListItemIngredientBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(ingredient: Ingredient) {
@@ -61,9 +62,13 @@ class ShoppingListIngredientAdapter(
                 unitDisplay
             )
 
-            // Handle cart button click
-            binding.cartButton.setOnClickListener {
-                onCartButtonClicked(ingredient)
+            // Handle edit button click
+            binding.editButton.setOnClickListener {
+                onEditButtonClicked(ingredient)
+            }
+
+            binding.deleteButton.setOnClickListener{
+                onDeleteButtonClicked(ingredient)
             }
         }
     }

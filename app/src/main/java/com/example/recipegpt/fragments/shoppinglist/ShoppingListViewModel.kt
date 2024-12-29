@@ -172,13 +172,6 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
         applyQueryFilter()
     }
 
-    fun setPopupIngredient(newIngredient: Ingredient?){
-        _popupIngredient.value = newIngredient
-    }
-
-    fun setPopupSelectedUnit(newUnit: QuantUnit?){
-        _popupSelectedUnit.value = newUnit
-    }
 
 
     fun addToDatabase(ingredient: Ingredient) {

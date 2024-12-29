@@ -2,7 +2,6 @@ package com.example.recipegpt.fragments.shoppinglist
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,11 +12,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 
 import com.example.recipegpt.R
 import com.example.recipegpt.adapters.ShoppingListIngredientAdapter
 import com.example.recipegpt.databinding.FragmentShoppingListBinding
-import com.example.recipegpt.models.Ingredient
 import com.example.recipegpt.models.QuantUnit
 import com.example.recipegpt.models.UnitConverter
 
@@ -151,12 +150,20 @@ class ShoppingListFragment : Fragment() {
             val ingredient = viewModel.popupIngredient.value
             val selectedUnit = viewModel.popupSelectedUnit.value
             if (amount != null && ingredient != null && selectedUnit != null) {
-                val updatedIngredient = ingredient.copy(
-                    amount = amount,
-                    unit = selectedUnit.unit
-                )
-                viewModel.addToDatabase(updatedIngredient)
-                viewModel.closePopup()
+                if(amount > 0.0){
+                    val updatedIngredient = ingredient.copy(
+                        amount = amount,
+                        unit = selectedUnit.unit
+                    )
+                    viewModel.addToDatabase(updatedIngredient)
+                    viewModel.closePopup()
+                }else{
+                    Toast.makeText(context, getString(R.string.invalid_amount_warning), Toast.LENGTH_SHORT).show()
+                }
+
+            }else{
+                Toast.makeText(context, getString(R.string.invalid_input_ingredient_popup), Toast.LENGTH_SHORT).show()
+
             }
         }
     }

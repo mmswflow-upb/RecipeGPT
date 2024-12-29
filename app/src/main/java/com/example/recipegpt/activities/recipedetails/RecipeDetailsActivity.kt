@@ -9,15 +9,11 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.viewModelScope
 import com.example.recipegpt.R
 import com.example.recipegpt.databinding.ActivityRecipeDetailsBinding
 import com.example.recipegpt.models.QuantUnit
 import com.example.recipegpt.models.Recipe
 import com.example.recipegpt.models.UnitConverter
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class RecipeDetailsActivity : AppCompatActivity() {
 
@@ -55,8 +51,8 @@ class RecipeDetailsActivity : AppCompatActivity() {
             // Remove old views when updating the list of ingredients
             binding.ingredientsList.removeAllViews()
             recipe?.ingredients?.forEach { ingredient ->
-                val ingredientView = layoutInflater.inflate(R.layout.item_ingredient, binding.ingredientsList, false)
-                val ingredientBinding = com.example.recipegpt.databinding.ItemIngredientBinding.bind(ingredientView)
+                val ingredientView = layoutInflater.inflate(R.layout.recipe_details_item_ingredient, binding.ingredientsList, false)
+                val ingredientBinding = com.example.recipegpt.databinding.RecipeDetailsItemIngredientBinding.bind(ingredientView)
 
                 // Convert the unit display
                 val displayUnit = UnitConverter.getDisplayName(applicationContext, QuantUnit.entries.first { entry -> entry.unit == ingredient.unit  })
@@ -166,8 +162,8 @@ class RecipeDetailsActivity : AppCompatActivity() {
         // Populate ingredients
         binding.ingredientsList.removeAllViews()
         recipe.ingredients.forEach { ingredient ->
-            val ingredientView = layoutInflater.inflate(R.layout.item_ingredient, binding.ingredientsList, false)
-            val ingredientBinding = com.example.recipegpt.databinding.ItemIngredientBinding.bind(ingredientView)
+            val ingredientView = layoutInflater.inflate(R.layout.recipe_details_item_ingredient, binding.ingredientsList, false)
+            val ingredientBinding = com.example.recipegpt.databinding.RecipeDetailsItemIngredientBinding.bind(ingredientView)
 
             // Convert the unit display
             val displayUnit = UnitConverter.getDisplayName(applicationContext, QuantUnit.entries.first { entry -> entry.unit == ingredient.unit  })
