@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.recipegpt.R
 import com.example.recipegpt.adapters.SavedIngredientAdapter
 import com.example.recipegpt.databinding.FragmentSavedIngredientsBinding
+import com.example.recipegpt.models.Ingredient
 import com.example.recipegpt.models.QuantUnit
 import com.example.recipegpt.models.UnitConverter
 
@@ -156,11 +157,24 @@ class SavedIngredientsFragment : Fragment(R.layout.fragment_saved_ingredients) {
             val ingredient = viewModel.popupIngredient.value
             val selectedUnit = viewModel.popupSelectedUnit.value
             if (amount != null && ingredient != null && selectedUnit != null) {
+
                 if(amount > 0.0){
-                    val updatedIngredient = ingredient.copy(
-                        amount = amount - ingredient.amount.toDouble() ,
-                        unit = selectedUnit.unit
-                    )
+
+                    val updatedIngredient : Ingredient
+                    if(selectedUnit.unit != ingredient.unit){
+                        viewModel.deleteIngredient(ingredient)
+                        updatedIngredient = ingredient.copy(
+                            amount = amount,
+                            unit = selectedUnit.unit
+                        )
+                    }else{
+                        updatedIngredient = ingredient.copy(
+                            amount = amount - ingredient.amount.toDouble(),
+                            unit = selectedUnit.unit
+                        )
+                    }
+
+
                     viewModel.editIngredientInDatabase(updatedIngredient)
                     viewModel.closePopup()
                 }else{

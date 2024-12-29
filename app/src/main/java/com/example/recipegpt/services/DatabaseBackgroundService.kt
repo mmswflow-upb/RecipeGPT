@@ -172,7 +172,7 @@ class DatabaseBackgroundService : Service() {
                             QuantUnit.valueOf(required.unit),
                             QuantUnit.valueOf(saved.unit)
                         )
-                        requiredAmountInSavedUnit > saved.amount
+                        requiredAmountInSavedUnit /saved.amount < 0.99 //1% allowed difference
                     } catch (e: IllegalArgumentException) {
                         true // Treat as insufficient if conversion fails
                     }

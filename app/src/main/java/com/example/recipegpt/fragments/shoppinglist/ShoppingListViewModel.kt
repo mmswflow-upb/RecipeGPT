@@ -21,6 +21,7 @@ import com.example.recipegpt.services.DatabaseBackgroundService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 class ShoppingListViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -124,12 +125,15 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
                                             QuantUnit.valueOf(savedIngredient.unit)
                                         ) - savedIngredient.amount.toDouble()
                                     )
-                                    if (remainingAmount > 0) {
+                                    if (abs(remainingAmount)/necessaryIngredient.amount.toDouble() > 0.01 ) { //1% max allowed difference between saved amount and required amount by recipe
+                                        val oldUnit = QuantUnit.entries.first{ it.unit == savedIngredient.unit}
+                                        val optimalUnit = UnitConverter.getOptimalUnit(remainingAmount, oldUnit)
+                                        val convertedRemainingAmount = UnitConverter.convert(remainingAmount, oldUnit, optimalUnit)
                                         shoppingList.add(
                                             Ingredient(
                                                 item = necessaryIngredient.item,
-                                                amount = remainingAmount,
-                                                unit = savedIngredient.unit
+                                                amount = convertedRemainingAmount,
+                                                unit = optimalUnit.unit
                                             )
                                         )
                                     }

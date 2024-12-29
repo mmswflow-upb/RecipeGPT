@@ -47,37 +47,9 @@ class RecipeDetailsActivity : AppCompatActivity() {
         }
 
         //Update the colors of the ingredient amounts in case there's a change in the saved ingredients DB
-        viewModel.ingredientAvailability.observe(this) { availability ->
-            // Remove old views when updating the list of ingredients
-            binding.ingredientsList.removeAllViews()
-            recipe?.ingredients?.forEach { ingredient ->
-                val ingredientView = layoutInflater.inflate(R.layout.recipe_details_item_ingredient, binding.ingredientsList, false)
-                val ingredientBinding = com.example.recipegpt.databinding.RecipeDetailsItemIngredientBinding.bind(ingredientView)
+        viewModel.ingredientAvailability.observe(this) {
+                updateIngredientsList()
 
-                // Convert the unit display
-                val displayUnit = UnitConverter.getDisplayName(applicationContext, QuantUnit.entries.first { entry -> entry.unit == ingredient.unit  })
-
-
-
-                ingredientBinding.ingredientName.text = ingredient.item
-                ingredientBinding.ingredientAmount.text = getString(
-                    R.string.ingredient_amount_placeholder,
-                    ingredient.amount,
-                    displayUnit
-                )
-                val isAvailable = availability[ingredient.item] ?: false
-                ingredientBinding.ingredientAmount.setTextColor(
-                    if (isAvailable)
-                    {
-
-                        resources.getColor(R.color.greenPrimary, null)
-                    }
-                    else{ resources.getColor(R.color.redDark, null)
-                    }
-
-                )
-                binding.ingredientsList.addView(ingredientView)
-            }
         }
 
         viewModel.canBeCooked.observe(this) { canBeCooked ->
@@ -95,6 +67,7 @@ class RecipeDetailsActivity : AppCompatActivity() {
 
         binding.listIngredients.setOnClickListener {
             viewModel.toggleRecipeListedStatus()
+            updateIngredientsList()
         }
 
 
@@ -128,6 +101,42 @@ class RecipeDetailsActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateIngredientsList(){
+        // Remove old views when updating the list of ingredients
+
+        val availability = viewModel.ingredientAvailability.value!!
+        val recipe = viewModel.recipe.value
+
+        binding.ingredientsList.removeAllViews()
+        recipe?.ingredients?.forEach { ingredient ->
+            val ingredientView = layoutInflater.inflate(R.layout.recipe_details_item_ingredient, binding.ingredientsList, false)
+            val ingredientBinding = com.example.recipegpt.databinding.RecipeDetailsItemIngredientBinding.bind(ingredientView)
+
+            // Convert the unit display
+            val displayUnit = UnitConverter.getDisplayName(applicationContext, QuantUnit.entries.first { entry -> entry.unit == ingredient.unit  })
+
+
+
+            ingredientBinding.ingredientName.text = ingredient.item
+            ingredientBinding.ingredientAmount.text = getString(
+                R.string.ingredient_amount_placeholder,
+                ingredient.amount,
+                displayUnit
+            )
+            val isAvailable = availability[ingredient.item] ?: false
+            ingredientBinding.ingredientAmount.setTextColor(
+                if (isAvailable)
+                {
+
+                    resources.getColor(R.color.greenPrimary, null)
+                }
+                else{ resources.getColor(R.color.redDark, null)
+                }
+
+            )
+            binding.ingredientsList.addView(ingredientView)
+        }
+    }
 
     private fun updateCookButton(canBeCooked: Boolean) {
         val primaryColor = getThemePrimaryColor()

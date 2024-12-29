@@ -3,7 +3,7 @@ package com.example.recipegpt.data.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.example.recipegpt.models.Converters
+import com.example.recipegpt.models.GsonConverters
 import com.example.recipegpt.models.Ingredient
 import com.example.recipegpt.models.Recipe
 
@@ -13,8 +13,8 @@ data class RecipeEntity(
     val estimatedCookingTime: Int,
     val servings: Int,
     var listed: Boolean,
-    @TypeConverters(Converters::class) val ingredients: List<Ingredient>,
-    @TypeConverters(Converters::class) val instructions: List<String>
+    @TypeConverters(GsonConverters::class) val ingredients: List<Ingredient>,
+    @TypeConverters(GsonConverters::class) val instructions: List<String>
 )
 
 

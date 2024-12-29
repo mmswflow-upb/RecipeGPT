@@ -90,11 +90,11 @@ class RecipeDetailsViewModel(application: Application) : AndroidViewModel(applic
 
         val availabilityMap = recipe.ingredients.associate { requiredIngredient ->
             val savedIngredient = savedIngredients.find { it.item.equals(requiredIngredient.item, ignoreCase = true) }
-            val isAvailable = savedIngredient != null && UnitConverter.convert(
+            val isAvailable = savedIngredient != null && savedIngredient.amount.toDouble() / UnitConverter.convert(
                 requiredIngredient.amount.toDouble(),
                 QuantUnit.valueOf(requiredIngredient.unit),
                 QuantUnit.valueOf(savedIngredient.unit)
-            ) <= savedIngredient.amount.toDouble()
+            )   >= 0.99
             requiredIngredient.item to isAvailable
         }
         _ingredientAvailability.postValue(availabilityMap)
@@ -141,6 +141,7 @@ class RecipeDetailsViewModel(application: Application) : AndroidViewModel(applic
         val resultReceiver = object : android.os.ResultReceiver(null) {
             override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                 val success = resultData?.getBoolean("success", false) ?: false
+                checkIfCanBeCooked()
                 viewModelScope.launch(Dispatchers.Main){
                     callback(success)
                 }
@@ -177,29 +178,5 @@ class RecipeDetailsViewModel(application: Application) : AndroidViewModel(applic
     }
 
 
-//    // Check ingredient availability against saved ingredients
-//    private fun checkIngredientAvailability(requiredIngredients: List<Ingredient>) {
-//        val resultReceiver = object : android.os.ResultReceiver(null) {
-//            override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-//                val savedIngredients =
-//                    resultData?.getParcelableArrayList("data", Ingredient::class.java) ?: emptyList<Ingredient>()
-//                val availability = requiredIngredients.associate { requiredIngredient ->
-//                    val savedIngredient = savedIngredients.find { it.item.equals(requiredIngredient.item, ignoreCase = true) }
-//                    val isAvailable =
-//                        savedIngredient != null && savedIngredient.amount.toDouble() >= requiredIngredient.amount.toDouble()
-//                    Log.d("checkIngredientAvailability", "${requiredIngredient.item} available: $isAvailable")
-//                    requiredIngredient.item to isAvailable
-//                }
-//                _ingredientAvailability.postValue(availability)
-//            }
-//        }
-//
-//        CoroutineScope(Dispatchers.IO).launch {
-//            val intent = Intent(context, DatabaseBackgroundService::class.java).apply {
-//                action = "GET_SAVED_INGREDIENTS"
-//                putExtra("resultReceiver", resultReceiver)
-//            }
-//            context.startService(intent)
-//        }
-//    }
+
 }

@@ -11,26 +11,33 @@ import java.util.concurrent.TimeUnit
 object ApiClient {
 
     private const val BASE_URL = BuildConfig.BASE_URL
-    private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS) // Connection timeout
-        .readTimeout(30, TimeUnit.SECONDS)   // Read timeout
-        .writeTimeout(30, TimeUnit.SECONDS)  // Write timeout
-        .addInterceptor { chain ->
-            try {
-                chain.proceed(chain.request())
-            } catch (e: SocketTimeoutException) {
-                // Log timeout or handle as needed
-                throw e // Re-throw or convert to a custom exception
-            }
-        }
-        .build()
 
-    val instance: Retrofit by lazy {
-        Retrofit.Builder()
+    // Function to create OkHttpClient with a dynamic timeout
+    private fun createHttpClient(timeout: Long): OkHttpClient {
+        return OkHttpClient.Builder()
+            .connectTimeout(timeout, TimeUnit.MILLISECONDS) // Connection timeout
+            .readTimeout(timeout, TimeUnit.MILLISECONDS)   // Read timeout
+            .writeTimeout(timeout, TimeUnit.MILLISECONDS)  // Write timeout
+            .addInterceptor { chain ->
+                try {
+                    chain.proceed(chain.request())
+                } catch (e: SocketTimeoutException) {
+                    // Log timeout or handle as needed
+                    throw e // Re-throw or convert to a custom exception
+                }
+            }
+            .build()
+    }
+
+    // Function to create Retrofit instance with dynamic timeout
+    fun getInstance(timeout: Long): Retrofit {
+        val client = createHttpClient(timeout)
+        return Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(okHttpClient)
+            .client(client)
             .addConverterFactory(EnumConverterFactory())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 }
+

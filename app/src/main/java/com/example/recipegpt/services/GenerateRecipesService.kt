@@ -19,24 +19,23 @@ class GenerateRecipeService : Service() {
 
     private var apiService: ApiInterface? = null
 
-    // Inner class for the client Binder
     inner class LocalBinder : Binder() {
         fun getService(): GenerateRecipeService = this@GenerateRecipeService
     }
 
-    // Binder instance to bind the service
     private val binder = LocalBinder()
 
 
 
-    override fun onCreate() {
-        super.onCreate()
-        // Initialize the API service
-        apiService = ApiClient.instance.create(ApiInterface::class.java)
-    }
-
     fun generateRecipes(query: String, numberOfRecipes: Int, callback: (List<Recipe>) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
+            // Calculate timeout dynamically
+            val timeout = calculateTimeout(numberOfRecipes)
+
+            // Create Retrofit instance with dynamic timeout
+            val retrofit = ApiClient.getInstance(timeout)
+            apiService = retrofit.create(ApiInterface::class.java)
+
             val recipes = try {
                 val response = apiService?.searchRecipes(numberOfRecipes, query)?.execute()
                 if (response?.isSuccessful == true) {
@@ -70,6 +69,15 @@ class GenerateRecipeService : Service() {
         )
     }
 
+    private fun calculateTimeout(numberOfRecipes: Int): Long {
+        val baseTimeout = 5000L // 5 seconds
+        val timeoutPerRecipe = 10000L // 10 second per recipe
+        val maxTimeout =120000L // Cap at 2 minutes
+
+        return (baseTimeout + (numberOfRecipes * timeoutPerRecipe)).coerceAtMost(maxTimeout)
+    }
+
+
     private fun handleGenericException(e: Exception) {
         e.printStackTrace()
         val title = getString(R.string.generic_error_title)
@@ -86,3 +94,4 @@ class GenerateRecipeService : Service() {
         return binder
     }
 }
+

@@ -9,14 +9,14 @@ import com.example.recipegpt.data.dao.IngredientDao
 import com.example.recipegpt.data.dao.RecipeDao
 import com.example.recipegpt.data.entities.IngredientEntity
 import com.example.recipegpt.data.entities.RecipeEntity
-import com.example.recipegpt.models.Converters
+import com.example.recipegpt.models.GsonConverters
 
 @Database(
     entities = [RecipeEntity::class, IngredientEntity::class],
     version = 1,
     exportSchema = false
 )
-@TypeConverters(Converters::class)
+@TypeConverters(GsonConverters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun recipeDao(): RecipeDao
