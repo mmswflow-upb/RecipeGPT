@@ -195,7 +195,7 @@ class SavedIngredientsFragment : Fragment(R.layout.fragment_saved_ingredients) {
         val ingredient = viewModel.popupIngredient.value!!
         binding.ingredientPopupCard.visibility = View.VISIBLE
         binding.overlayBackground.visibility = View.VISIBLE
-        binding.popupTitle.text = getString(R.string.ingredient_popup_title, ingredient.item)
+        binding.popupTitle.text = getString(R.string.saved_ingredient_popup_title, ingredient.item)
         binding.savedIngredientAmountInput.setText(ingredient.amount.toString())
 
 
