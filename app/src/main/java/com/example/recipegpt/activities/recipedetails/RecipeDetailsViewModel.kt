@@ -82,7 +82,7 @@ class RecipeDetailsViewModel(application: Application) : AndroidViewModel(applic
         }
 
         // Update LiveData
-        _recipe.postValue(updatedRecipe)
+        _recipe.value = updatedRecipe
     }
 
     private fun populateIngredientAvailability(savedIngredients: List<Ingredient>) {

@@ -102,6 +102,7 @@ class RecipeDetailsActivity : AppCompatActivity() {
     }
 
     private fun updateIngredientsList(){
+        Log.d("updateIngredientsList", "Updating list of ingredients")
         // Remove old views when updating the list of ingredients
 
         val availability = viewModel.ingredientAvailability.value!!
@@ -127,10 +128,10 @@ class RecipeDetailsActivity : AppCompatActivity() {
             ingredientBinding.ingredientAmount.setTextColor(
                 if (isAvailable)
                 {
-
                     resources.getColor(R.color.greenPrimary, null)
                 }
-                else{ resources.getColor(R.color.redDark, null)
+                else{
+                    resources.getColor(R.color.redDark, null)
                 }
 
             )
@@ -148,7 +149,6 @@ class RecipeDetailsActivity : AppCompatActivity() {
         binding.cookButton.imageTintList = ColorStateList.valueOf(color)
         binding.cookButton.isEnabled = canBeCooked
     }
-
 
 
     private fun updateListIngredientsButton(isListed: Boolean) {
@@ -197,7 +197,6 @@ class RecipeDetailsActivity : AppCompatActivity() {
             binding.instructionsList.addView(instructionView)
         }
     }
-
 
 
     private fun toggleButtonsVisibility(isSaved: Boolean) {
