@@ -1,34 +1,7 @@
 package com.example.recipegpt.models
 
 import android.content.Context
-import android.os.Parcelable
-import android.util.Log
 import com.example.recipegpt.R
-import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.Parcelize
-
-data class RecipesResponse(
-    val recipes: List<Recipe>
-)
-
-@Parcelize
-data class Recipe(
-    val title: String,
-    val ingredients: List<Ingredient>,
-    val instructions: List<String>,
-    val estimatedCookingTime: Int,
-    val servings: Int,
-    var listed: Boolean = false
-) : Parcelable
-
-@Parcelize
-data class Ingredient(
-    @SerializedName("item") val item: String,
-    @SerializedName("amount") val amount: Number,
-    @SerializedName("unit") val unit: String
-) : Parcelable
-
-
 
 enum class QuantUnit(val unit: String) {
     grams("grams"),
@@ -128,7 +101,7 @@ object UnitConverter {
     )
 
     // Map defining the progression of units for each category
-    private val unitProgression = mapOf(
+    val unitProgression = mapOf(
         // Mass units progression
         "mass" to listOf(
             QuantUnit.milligrams,
@@ -156,6 +129,7 @@ object UnitConverter {
             QuantUnit.whole_pieces
         )
     )
+
 
 
     private fun convertFromBase(amount: Double, unit: QuantUnit): Double {
@@ -218,7 +192,7 @@ object UnitConverter {
         }
     }
 
-    private fun getUnitCategory(unit: QuantUnit): String? {
+    fun getUnitCategory(unit: QuantUnit): String? {
         return when (unit) {
             in unitProgression["mass"]!! -> "mass"
             in unitProgression["volume"]!! -> "volume"
@@ -232,7 +206,6 @@ object UnitConverter {
         val category = getUnitCategory(initialUnit)
             ?: throw IllegalArgumentException("Unit $initialUnit does not belong to any defined category.")
 
-        Log.d("UnitConverter", "Initial value & unit: $amount ${initialUnit.unit}")
 
         // Get the progression for the category
         val units = unitProgression[category] ?: return initialUnit
@@ -255,7 +228,6 @@ object UnitConverter {
             if (convertedAmount.toInt() == 0) {
                 return currentUnit // Return the last valid unit
             }
-            Log.d("UnitConverter", "IN LOOP: Initial value & unit: $amount ${initialUnit.unit}")
 
             // Check if the fractional part has an unacceptable pattern
             val fractionalPart = convertedAmount - convertedAmount.toInt()

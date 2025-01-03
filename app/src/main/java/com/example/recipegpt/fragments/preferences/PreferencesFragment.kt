@@ -31,16 +31,12 @@ class PreferencesFragment : Fragment(R.layout.fragment_preferences) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Set initial values from the ViewModel
-        settingsViewModel.randomQuoteFrequency.observe(viewLifecycleOwner) { frequency ->
-            val position = resources.getStringArray(R.array.quote_fetching_frequencies).indexOf(frequency)
-            if (position >= 0) binding.randomQuoteFrequencySelector.setSelection(position)
-        }
+        setupObservers()
+        setupListeners()
 
-        settingsViewModel.maxResults.observe(viewLifecycleOwner) { maxResults ->
-            binding.maxResultsInput.setText(maxResults.toString())
-        }
+    }
 
+    private fun setupListeners(){
         // Add ActionListener for the maxResultsInput
         binding.maxResultsInput.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -73,7 +69,17 @@ class PreferencesFragment : Fragment(R.layout.fragment_preferences) {
             }
         }
     }
+    private fun setupObservers(){
+        // Set initial values from the ViewModel
+        settingsViewModel.randomQuoteFrequency.observe(viewLifecycleOwner) { frequency ->
+            val position = resources.getStringArray(R.array.quote_fetching_frequencies).indexOf(frequency)
+            if (position >= 0) binding.randomQuoteFrequencySelector.setSelection(position)
+        }
 
+        settingsViewModel.maxResults.observe(viewLifecycleOwner) { maxResults ->
+            binding.maxResultsInput.setText(maxResults.toString())
+        }
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

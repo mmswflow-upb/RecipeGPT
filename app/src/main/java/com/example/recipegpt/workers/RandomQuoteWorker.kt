@@ -1,7 +1,6 @@
 package com.example.recipegpt.workers
 
 import android.content.Context
-import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.recipegpt.R
@@ -26,7 +25,6 @@ class RandomQuoteWorker(context: Context, workerParams: WorkerParameters) : Work
 
             if (response.isSuccessful && response.body() != null) {
                 val quote = response.body()!!.quote
-                Log.d("RandomQuoteWorker", "Fetched random quote: $quote")
                 // Show the quote as a notification
                 NotificationUtils.showStandardNotification(
                     applicationContext,

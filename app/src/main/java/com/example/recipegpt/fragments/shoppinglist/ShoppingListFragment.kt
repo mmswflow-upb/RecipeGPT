@@ -1,5 +1,6 @@
 package com.example.recipegpt.fragments.shoppinglist
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,7 +14,6 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-
 import com.example.recipegpt.R
 import com.example.recipegpt.adapters.ShoppingListIngredientAdapter
 import com.example.recipegpt.databinding.FragmentShoppingListBinding
@@ -45,8 +45,8 @@ class ShoppingListFragment : Fragment() {
 
         setupRecyclerView()
         setupSearchBar()
-        setupObservers()
         setupPopup()
+        setupObservers()
 
         // Handle clicking outside the popup
         binding.overlayBackground.setOnClickListener {
@@ -65,6 +65,9 @@ class ShoppingListFragment : Fragment() {
         }
     }
 
+
+
+    @SuppressLint("SetTextI18n")
     private fun setupObservers() {
         // Observe filtered shopping list
         viewModel.filteredShoppingList.observe(viewLifecycleOwner) { ingredients ->
@@ -80,26 +83,75 @@ class ShoppingListFragment : Fragment() {
             viewModel.applyQueryFilter()
         }
 
-        viewModel.popupIngredient.observe(viewLifecycleOwner){ ingredient ->
-            if (ingredient != null){
+        viewModel.popupIngredient.observe(viewLifecycleOwner) { ingredient ->
+            if (ingredient != null) {
+                // Determine the relevant units based on the ingredient's unit category
+                val unitCategory = UnitConverter.getUnitCategory(QuantUnit.valueOf(ingredient.unit))
+                val relevantUnits = UnitConverter.unitProgression[unitCategory].orEmpty()
+
+                // Populate the spinner with relevant units
+                val displayNames = relevantUnits.map {
+                    UnitConverter.getDisplayName(requireContext(), it)
+                }
+
+                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, displayNames)
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                binding.ingredientUnitSpinner.adapter = adapter
+
+                // Safely set the spinner's selected item to the ingredient's current unit
+                val currentUnitIndex = relevantUnits.indexOfFirst { it == QuantUnit.valueOf(ingredient.unit) }
+
+                if (currentUnitIndex != -1) {
+
+                    binding.ingredientUnitSpinner.setSelection(currentUnitIndex)
+                } else {
+                    // Handle case where unit is not found in relevantUnits
+                    binding.ingredientUnitSpinner.setSelection(0) // Default to the first item
+                }
+
+                // Show the popup
                 showPopup()
-            }else{
+
+
+            } else {
                 hidePopup()
             }
         }
 
-        viewModel.popupSelectedUnit.observe(viewLifecycleOwner){ newUnit ->
-            if(newUnit?.unit != null){
-                val displayName = UnitConverter.getDisplayName( requireContext() ,
-                    QuantUnit.entries.first { it.unit ==  newUnit.unit}
-                )
-                val unitIndex = QuantUnit.entries.indexOfFirst {
-                    UnitConverter.getDisplayName(requireContext(), it) == displayName
-                }
-                binding.ingredientUnitSpinner.setSelection(if (unitIndex != -1) unitIndex else 0)
+        viewModel.popupSelectedUnit.observe(viewLifecycleOwner) { newUnit ->
+            val ingredient = viewModel.popupIngredient.value ?: return@observe
 
+            if (newUnit?.unit != null) {
+                // Retrieve the relevant units from the adapter
+                val unitCategory = UnitConverter.getUnitCategory(QuantUnit.valueOf(ingredient.unit))
+                val relevantUnits = UnitConverter.unitProgression[unitCategory]?.map {
+                    UnitConverter.getDisplayName(requireContext(), it)
+                } ?: emptyList()
+
+                // Find the position of the new unit in the adapter
+                val displayName = UnitConverter.getDisplayName(requireContext(), newUnit)
+                val unitIndex = relevantUnits.indexOf(displayName)
+
+                if (unitIndex != -1) {
+                    // Convert the amount to the new unit
+                    val convertedAmount = UnitConverter.convert(
+                        ingredient.amount.toDouble(),
+                        QuantUnit.valueOf(ingredient.unit),
+                        newUnit
+                    )
+
+                    // Update the spinner selection using the adapter index
+                    binding.ingredientUnitSpinner.setSelection(unitIndex)
+
+                    // Update the displayed amount
+                    binding.ingredientAmountInput.setText(convertedAmount.toString())
+                } else {
+                    // Fallback if the unit is not found
+                    binding.ingredientUnitSpinner.setSelection(0)
+                }
             }
         }
+
 
     }
 
@@ -130,45 +182,38 @@ class ShoppingListFragment : Fragment() {
     }
 
     private fun setupPopup() {
-        val displayNames = QuantUnit.entries.map { UnitConverter.getDisplayName(requireContext(), it) }
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, displayNames)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.ingredientUnitSpinner.adapter = adapter
 
-        binding.ingredientUnitSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedDisplayName = displayNames[position]
-                val selectedUnit = UnitConverter.fromDisplayName(requireContext(), selectedDisplayName)
-                viewModel.updatePopupSelectedUnit(selectedUnit)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
 
         binding.popupDoneButton.setOnClickListener {
             val amount = binding.ingredientAmountInput.text.toString().toDoubleOrNull()
             val ingredient = viewModel.popupIngredient.value
             val selectedUnit = viewModel.popupSelectedUnit.value
             if (amount != null && ingredient != null && selectedUnit != null) {
-                if(amount > 0.0){
+                if (amount > 0.0) {
                     val updatedIngredient = ingredient.copy(
                         amount = amount,
                         unit = selectedUnit.unit
                     )
                     viewModel.addToDatabase(updatedIngredient)
                     viewModel.closePopup()
-                }else{
+                } else {
                     Toast.makeText(context, getString(R.string.invalid_amount_warning), Toast.LENGTH_SHORT).show()
                 }
-
-            }else{
+            } else {
                 Toast.makeText(context, getString(R.string.invalid_input_ingredient_popup), Toast.LENGTH_SHORT).show()
-
             }
         }
+
+        binding.ingredientUnitSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedDisplayName = parent?.getItemAtPosition(position).toString()
+                val selectedUnit = UnitConverter.fromDisplayName(requireContext(), selectedDisplayName)
+                viewModel.updatePopupSelectedUnit(selectedUnit)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
     }
-
-
 
 
     private fun showPopup() {
@@ -178,10 +223,7 @@ class ShoppingListFragment : Fragment() {
         binding.popupTitle.text = getString(R.string.ingredient_popup_title, ingredient.item)
         binding.ingredientAmountInput.setText(ingredient.amount.toString())
 
-
     }
-
-
 
     private fun hidePopup() {
         binding.ingredientPopupCard.visibility = View.GONE

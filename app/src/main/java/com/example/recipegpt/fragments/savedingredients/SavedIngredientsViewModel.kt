@@ -8,7 +8,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.os.ResultReceiver
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -39,16 +38,11 @@ class SavedIngredientsViewModel(application: Application) : AndroidViewModel(app
     private val _query = MutableLiveData("")
     val query: LiveData<String> get() = _query
 
-    /**
-     * BroadcastReceiver to listen for local database changes.
-     * Whenever we receive the "com.example.recipegpt.LOCAL_DB_CHANGED" action,
-     * we refetch the saved ingredients list
-     */
+
     private val databaseChangesReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == "com.example.recipegpt.LOCAL_DB_CHANGED") {
                 // Re-fetch the shopping list whenever DB changes
-                Log.d("ShoppingListViewModel", "Local DB changed broadcast received.")
                 fetchSavedIngredients()
                 applyQueryFilter()
             }
@@ -72,13 +66,11 @@ class SavedIngredientsViewModel(application: Application) : AndroidViewModel(app
 
 
     fun applyQueryFilter() {
-        Log.d("applyQueryFilter", "Filtering listed ingredients")
         val filteredList  = _ingredientsList.value?.filter { ingredient -> ingredient.item.contains(_query.value!!, ignoreCase = true) }
         _filteredIngredientsList.postValue(filteredList ?: emptyList())
     }
 
     fun updateQuery(newQuery: String) {
-        Log.d("updateQuery", "Updating filter query")
         _query.value = newQuery
         applyQueryFilter()
     }
@@ -108,7 +100,6 @@ class SavedIngredientsViewModel(application: Application) : AndroidViewModel(app
 
     fun editIngredientInDatabase(ingredient: Ingredient) {
         CoroutineScope(Dispatchers.IO).launch {
-            Log.d("addToDatabase", "Adding or updating ingredient in DB: ${ingredient.item}")
             val intent = Intent(context, DatabaseBackgroundService::class.java).apply {
                 action = "SAVE_OR_UPDATE_INGREDIENT"
                 putExtra("ingredient", ingredient)
@@ -120,7 +111,6 @@ class SavedIngredientsViewModel(application: Application) : AndroidViewModel(app
     fun deleteIngredient(ingredient: Ingredient){
 
         CoroutineScope(Dispatchers.IO).launch {
-            Log.d("deleting ingredient", "The deleted ingredient: ${ingredient.item}")
             val intent = Intent(context, DatabaseBackgroundService::class.java).apply{
                 action = "DELETE_INGREDIENT_BY_NAME_AND_UNIT"
                 putExtra("name", ingredient.item)

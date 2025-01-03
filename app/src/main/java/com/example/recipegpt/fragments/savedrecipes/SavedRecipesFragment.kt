@@ -33,13 +33,39 @@ class SavedRecipesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupRecyclerView()
+
+        setupInputListeners()
+
+        setupObservers()
+    }
+
+    private fun setupRecyclerView() {
         // Initialize RecyclerView and Adapter
         recipeAdapter = RecipeAdapter(requireContext())
         binding.savedRecipesRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = recipeAdapter
         }
+    }
+    private fun setupObservers(){
+        viewModel.savedRecipes.observe(viewLifecycleOwner) {
+            viewModel.filterRecipes(viewModel.query.value ?: "")
+        }
 
+        // Observe filtered recipes LiveData
+        viewModel.filteredRecipes.observe(viewLifecycleOwner) { recipes ->
+            recipeAdapter.submitList(recipes)
+            // Display the No Recipes message when the list is empty
+            if (recipes.isNotEmpty()) {
+                binding.noSavedRecipesTextView.visibility = View.INVISIBLE
+            } else {
+                binding.noSavedRecipesTextView.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun setupInputListeners(){
         // Set up the TextWatcher for live filtering
         binding.searchSavedRecipes.addTextChangedListener(object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -65,23 +91,7 @@ class SavedRecipesFragment : Fragment() {
                 false
             }
         }
-
-        viewModel.savedRecipes.observe(viewLifecycleOwner) {
-            viewModel.filterRecipes(viewModel.query.value ?: "")
-        }
-
-        // Observe filtered recipes LiveData
-        viewModel.filteredRecipes.observe(viewLifecycleOwner) { recipes ->
-            recipeAdapter.submitList(recipes)
-            // Display the No Recipes message when the list is empty
-            if (recipes.isNotEmpty()) {
-                binding.noSavedRecipesTextView.visibility = View.INVISIBLE
-            } else {
-                binding.noSavedRecipesTextView.visibility = View.VISIBLE
-            }
-        }
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

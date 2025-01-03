@@ -2,7 +2,6 @@ package com.example.recipegpt.utils
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
 class SharedPreferencesManager(private val context: Context) {
@@ -43,7 +42,6 @@ class SharedPreferencesManager(private val context: Context) {
             putExtra(EXTRA_RANDOM_QUOTE_FREQUENCY, getRandomQuoteFrequency())
             putExtra(EXTRA_MAX_RESULTS, getMaxResults())
         }
-        Log.d("SharedPreferencesManager-broadcastSettingsUpdate", "Broadcasting the new shared preferences: ${getMaxResults()} | ${getRandomQuoteFrequency()}")
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
     }
 }

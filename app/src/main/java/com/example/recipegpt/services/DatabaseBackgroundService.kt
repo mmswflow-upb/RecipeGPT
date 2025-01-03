@@ -29,13 +29,11 @@ class DatabaseBackgroundService : Service() {
     private fun notifyDatabaseChanged() {
         val intent = Intent("com.example.recipegpt.LOCAL_DB_CHANGED")
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
-        Log.d("DBBackgroundService-notifyDatabaseChanged", "Notifying other viewmodels of the changes in the db")
     }
 
     override fun onCreate() {
         super.onCreate()
         database = AppDatabase.getInstance(applicationContext)
-        Log.d("DBBackgroundService-onCreate", "database initialized")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -51,7 +49,6 @@ class DatabaseBackgroundService : Service() {
             }
             "SAVE_OR_REPLACE_RECIPE" -> {
                 val recipe = intent.getParcelableExtra("recipe", Recipe::class.java)
-                Log.d("DBService-onStart", "Save or replacing: ${recipe?.title} with listing : ${recipe?.listed}")
                 if (recipe != null) saveOrReplaceRecipe(recipe, resultReceiver)
             }
             "DELETE_RECIPE_BY_NAME" -> {

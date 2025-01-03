@@ -76,12 +76,12 @@
     <string name="cups">cups</string>
     <string name="liters">liters</string>
     <string name="milliliters">milliliters</string>
-    <string name="piece_about_50_grams">pieces (about 50 grams each)</string>
-    <string name="piece_about_100_grams">pieces (about 100 grams each)</string>
-    <string name="piece_about_250_grams">pieces (about 250 grams each)</string>
+    <string name="piece_about_50_grams">pieces (50 grams)</string>
+    <string name="piece_about_100_grams">pieces (100 grams)</string>
+    <string name="piece_about_250_grams">pieces (250 grams)</string>
     <string name="whole_pieces">pieces</string>
-    <string name="teaspoons_solid">teaspoons (solid)</string>
-    <string name="tablespoons_solid">tablespoons (solid)</string>
+    <string name="teaspoons_solid">teaspoons</string>
+    <string name="tablespoons_solid">tablespoons</string>
 
     <string name="timeout_error_message">Fetching recipes for "%1$s" took too long. Please try again.</string>
     <string name="generic_error_message">An error occurred while fetching recipes. Please try again later.</string>

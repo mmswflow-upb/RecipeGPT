@@ -8,7 +8,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.os.ResultReceiver
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -44,16 +43,11 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
     private val _query = MutableLiveData("")
     val query: LiveData<String> get() = _query
 
-    /**
-     * BroadcastReceiver to listen for local database changes.
-     * Whenever we receive the "com.example.recipegpt.LOCAL_DB_CHANGED" action,
-     * we refetch the shopping list (i.e., re-fetch listed recipes and re-apply query filter).
-     */
+
     private val databaseChangesReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == "com.example.recipegpt.LOCAL_DB_CHANGED") {
                 // Re-fetch the shopping list whenever DB changes
-                Log.d("ShoppingListViewModel", "Local DB changed broadcast received.")
                 fetchListedRecipes()
                 applyQueryFilter()
             }
@@ -77,7 +71,6 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
 
     private fun fetchListedRecipes() {
         CoroutineScope(Dispatchers.IO).launch {
-            Log.d("fetchListedRecipes", "Fetching listed recipes to get their ingredients")
             val listedRecipesResultReceiver = object : ResultReceiver(null) {
                 override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                     val recipes = resultData?.getParcelableArrayList("recipes", Recipe::class.java) ?: emptyList()
@@ -165,13 +158,11 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun applyQueryFilter() {
-        Log.d("applyQueryFilter", "Filtering listed ingredients")
         val filteredList  = _shoppingList.value?.filter { ingredient -> ingredient.item.contains(_query.value!!, ignoreCase = true) }
         _filteredShoppingList.postValue(filteredList ?: emptyList())
     }
 
     fun updateQuery(newQuery: String) {
-        Log.d("updateQuery", "Updating filter query")
         _query.value = newQuery
         applyQueryFilter()
     }
@@ -180,7 +171,6 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
 
     fun addToDatabase(ingredient: Ingredient) {
         CoroutineScope(Dispatchers.IO).launch {
-            Log.d("addToDatabase", "Adding or updating ingredient in DB: ${ingredient.item}")
             val intent = Intent(context, DatabaseBackgroundService::class.java).apply {
                 action = "SAVE_OR_UPDATE_INGREDIENT"
                 putExtra("ingredient", ingredient)
