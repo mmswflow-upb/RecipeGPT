@@ -1,5 +1,5 @@
 # RecipeGPT 📜🥗🧁
-An Android app used for generating recipes by sending queries to OpenAI's GPT-4o model to process them and return recipes 🤤🍰
+An Android app used for generating recipes by sending queries to OpenAI's GPT-4o model to process them and return recipes 🤤🍰.
 It also shares with you cooking wisdom through its AI-generated quotes 🧠👩🏻‍🍳
 
 ## Usage
@@ -27,11 +27,11 @@ It also shares with you cooking wisdom through its AI-generated quotes 🧠👩�
 ### 2. App Structure & Components Used
 1. Activities - The app implements two activities, one called ***HomeActivity*** and the other ***RecipeDetailsActivity***. The ***HomeActivity*** contains 5 fragments that are reachable through the bottom navigation menu, they're grouped together in one activity because they do not focus on a single specific object. The ***RecipeDetailsActivity*** is started only when the user wants to view the details of a specific recipe.
 
-2. Intents - Starting the ***RecipeDetailsActivity*** when clicking on the ***details*** button of a saved or generated recipe. Also when sharing recipes, an intent set with ***ACTION_SEND*** is used to let other apps know that we're going to share a recipe as plain text through them.
+2. Intents - Starting the ***RecipeDetailsActivity*** when clicking on the ***details*** button of a saved or generated recipe. Also when sharing recipes, an intent set with ***ACTION_SEND*** is used to let other apps know that we're going to share a recipe as plain text through them. They're also used when starting the background and foreground services mentioned below.
 
-3. Foreground Services - Displaying the persistent notification while waiting for API return generated recipes, it shows the elapsed time since the request has been made.
+3. Foreground Services - Displaying a persistent notification while waiting for the API to return generated recipes. It shows the elapsed time since the request has been made and a final message when the results come in, or if an error occurs it displays the error message in the notification.
 
-4. Background Services - Saving or fetching recipes or ingredients from the ROOM database, checking if the requirements for cooking a recipe are met, and removing from the DB the ingredients of a recipe when pressing on the ***cooked*** button.
+4. Background Services - Saving or fetching recipes or ingredients from the ROOM database, checking if the requirements for cooking a recipe are met, and removing from the DB the ingredients of a recipe when pressing on the ***cooked*** button. Updating ingredients when users change amounts or units, and updating recipes when users list them or unlist them. It also manages very specific types of searches and deleting data.
 
 5. Bound Services - Bound to the ***HomeFragment*** when the view gets created. The ***generateRecipesService*** is used to make requests to the API. 
 
