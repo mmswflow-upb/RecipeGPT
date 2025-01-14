@@ -39,14 +39,14 @@ It also shares with you cooking wisdom through its AI-generated quotes 🧠👩�
 
 4. Foreground Services - Displaying a persistent notification while waiting for the API to return generated recipes. It updates the elapsed time since the request has been made, which is shown in a persistent notification, and a final message when the results come in, or if an error occurs it displays the error message in the notification.
 
-5. Background Services - Our app implements a service called ***DatabaseBackgroundService*** which is used for saving and fetching recipes or ingredients from the ROOM database, checking if the requirements for cooking a recipe are met, and removing from the DB the ingredients of a recipe when pressing on the ***cooked*** button. Updating ingredients when users change amounts or units, and updating recipes when users list them or unlist them. It also manages very specific types of searches and deleting data.
+5. Database - App uses a ***ROOM*** database for storing recipes which are fetched from the external API, and stores available ingredients. 
 
-6. Bound Services - The ***generateRecipesService*** is used to make requests to the API. It is bound to the ***HomeFragment*** when the view gets created. 
+6. Background Services - Our app implements a service called ***DatabaseBackgroundService*** which is used for saving and fetching recipes or ingredients from the database, checking if the requirements for cooking a recipe are met, and removing from the DB the ingredients of a recipe when pressing on the ***cooked*** button. It also handles updating ingredients when users change amounts or units, and updating recipes when users list them or unlist them. It also manages very specific types of searches and deleting data.
 
-7. Shared Preferences - The app has two settings that are saved in ***SharedPreferences***. The frequency of fetching random cooking quotes and the number of recipes to be generated with each request. This is implemented using a utility class called ***SharedPreferencesManager***.
+7. Bound Services - The ***generateRecipesService*** is used to make requests to the API. It is bound to the ***HomeFragment*** when the view gets created. 
 
-8. Broadcast Receivers - Whenever there's a change in the database, the ***DatabaseBackgroundService*** notifies all broadcast receivers about it, then the fragments linked to them have to update their UI accordingly. This ensures that data is synchronized across fragments. The ***SharedPreferencesManager*** also 
+8. Shared Preferences - The app has two settings that are saved in ***SharedPreferences***. The frequency of fetching random cooking quotes and the number of recipes to be generated with each request. This is implemented using a utility class called ***SharedPreferencesManager***.
 
-9. Database - App uses a ROOM database for storing recipes which are fetched from the external API, and available ingredients. 
+9. Broadcast Receivers - Whenever there's a change in the database, the ***DatabaseBackgroundService*** notifies all broadcast receivers about it, then the fragments linked to them have to update their UI accordingly. This ensures that data is synchronized across fragments. The ***SharedPreferencesManager*** also notifies a broadcast receiver linked to the ***HomeFragment*** whenever preferences are changed. This is because the ***HomeFragment*** needs to update the number of recipes it will request from the ***generateRecipesService***, and it must also enqueue the ***UniquePeriodWork*** with the ***WorkerManager*** that fetches random cooking quotes from the remote API. 
 
 10. Usage of External APIs - Our app fetches recipes and random cooking quotes from our own [custom-made web server](https://github.com/mmswflow-upb/recipe-provider-web-server.git) which is hosted online. We used ***Retrofit*** together with ***OkHttpClient*** to create an API client for sending requests to our remote web server.
