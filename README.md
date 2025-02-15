@@ -21,12 +21,12 @@ It also shares with you cooking wisdom through its AI-generated quotes 🧠👩�
 
 # Architecture
 
-
+![architecture_pic](screenshots/architecture.png)
 
 ### 1. Web Server 
 - Built with ExpressJS, hosted on heroku. It sends prompts to OpenAI's gpt-4o to generate the recipes and it fetches them, then they get redirected to the app requesting them. Check out the repo by clicking [here](https://github.com/mmswflow-upb/recipe-provider-web-server.git).
 
-- Why use it as an intermediary? Easier to make requests to OpenAI & Process responses as there's no SDK or library for android apps yet.
+- Why use it as an intermediary? Easier to make requests to OpenAI & Process responses as there's no SDK or library for android apps yet. Also the OpenAI API key is shared for all users, but it's saved securly and no one has access to it.
 
 ### 2. App Structure & Components Used
 1. Activities - The app implements two activities, one called ***HomeActivity*** and the other ***RecipeDetailsActivity***. The ***HomeActivity*** contains 5 fragments that are reachable through the bottom navigation menu, they're grouped together in one activity because they do not focus on a single specific object. The ***RecipeDetailsActivity*** is started only when the user wants to view the details of a specific recipe.
@@ -39,7 +39,7 @@ It also shares with you cooking wisdom through its AI-generated quotes 🧠👩�
 
 5. Database - App uses a ***ROOM*** database for storing recipes which are fetched from the external API, and stores available ingredients. 
 
-6. Background Services - Our app implements a service called ***DatabaseBackgroundService*** which is used for saving and fetching recipes or ingredients from the database, checking if the requirements for cooking a recipe are met, and removing from the DB the ingredients of a recipe when pressing on the ***cooked*** button. It also handles updating ingredients when users change amounts or units, and updating recipes when users list them or unlist them. It also manages very specific types of searches and deleting data.
+6. Background Services - The app implements a service called ***DatabaseBackgroundService*** which is used for saving and fetching recipes or ingredients from the database, checking if the requirements for cooking a recipe are met, and removing from the DB the ingredients of a recipe when pressing on the ***cooked*** button. It also handles updating ingredients when users change amounts or units, and updating recipes when users list them or unlist them. It also manages very specific types of searches and deleting data.
 
 7. Bound Services - The ***generateRecipesService*** is used to make requests to the API. It is bound to the ***HomeFragment*** when the view gets created. 
 
@@ -47,4 +47,6 @@ It also shares with you cooking wisdom through its AI-generated quotes 🧠👩�
 
 9. Broadcast Receivers - Whenever there's a change in the database, the ***DatabaseBackgroundService*** notifies all broadcast receivers about it, then the fragments linked to them have to update their UI accordingly. This ensures that data is synchronized across fragments. The ***SharedPreferencesManager*** also notifies a broadcast receiver linked to the ***HomeFragment*** whenever preferences are changed. This is because the ***HomeFragment*** needs to update the number of recipes it will request from the ***generateRecipesService***, and it must also enqueue the ***UniquePeriodWork*** with the ***WorkerManager*** that fetches random cooking quotes from the remote API. 
 
-10. Usage of External APIs - Our app fetches recipes and random cooking quotes from our own [custom-made web server](https://github.com/mmswflow-upb/recipe-provider-web-server.git) which is hosted online. We used ***Retrofit*** together with ***OkHttpClient*** to create an API client for sending requests to our remote web server.
+10. Usage of External APIs - The app fetches recipes and random cooking quotes from our own [custom-made web server](https://github.com/mmswflow-upb/recipe-provider-web-server.git) which is hosted online. We used ***Retrofit*** together with ***OkHttpClient*** to create an API client for sending requests to our remote web server.
+
+11. ViewModels - They're used to improve the user's experience, for example when rotating the phone the content of the currently open page won't be reset to default, and requests to services are handled by the ViewModels.
