@@ -2,11 +2,6 @@
 An Android app used for generating recipes by sending queries to OpenAI's GPT-4o model to process them and return recipes 🤤🍰.
 It also shares with you cooking wisdom through its AI-generated quotes 🧠👩🏻‍🍳
 
-## Team
-
-- Al-Khalidy Essam 1231B
-- Sakka Mohamad-Mario 1231B
-- Zafar Azzam 1231B
 
 ## Usage
 
@@ -24,11 +19,14 @@ It also shares with you cooking wisdom through its AI-generated quotes 🧠👩�
 
 - In preferences you have 2 settings, one which sets the frequency at which you receive random cooking quotes from the internet, the other one sets the number of recipes you want to generate on each request. The waiting time can be pretty big sometimes when generating recipes, so going for large numbers isn't going to work very well, since the server might throw a timeout exception.
 
+# Architecture
 
-## Technical Details
+
 
 ### 1. Web Server 
 - Built with ExpressJS, hosted on heroku. It sends prompts to OpenAI's gpt-4o to generate the recipes and it fetches them, then they get redirected to the app requesting them. Check out the repo by clicking [here](https://github.com/mmswflow-upb/recipe-provider-web-server.git).
+
+- Why use it as an intermediary? Easier to make requests to OpenAI & Process responses as there's no SDK or library for android apps yet.
 
 ### 2. App Structure & Components Used
 1. Activities - The app implements two activities, one called ***HomeActivity*** and the other ***RecipeDetailsActivity***. The ***HomeActivity*** contains 5 fragments that are reachable through the bottom navigation menu, they're grouped together in one activity because they do not focus on a single specific object. The ***RecipeDetailsActivity*** is started only when the user wants to view the details of a specific recipe.
