@@ -8,7 +8,6 @@ plugins {
 
 }
 
-val devKey: String = gradleLocalProperties(rootDir, providers).getProperty("devKey", "")
 val apiUrl: String = gradleLocalProperties(rootDir, providers).getProperty("apiUrl", "")
 
 android {
@@ -20,7 +19,6 @@ android {
         buildConfig=true
     }
     defaultConfig {
-        buildConfigField ("String", "API_KEY", "\"${devKey}\"")
         buildConfigField ("String", "BASE_URL", "\"${apiUrl}\"")
 
         applicationId = "com.example.recipegpt"
